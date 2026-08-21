@@ -1,0 +1,21 @@
+{
+  "name": "xdesign-demokit-platform",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 4178",
+    "build": "vite build && node scripts/create-static-worker.mjs",
+    "preview": "vite preview --host 127.0.0.1 --port 4178"
+  },
+  "dependencies": {
+    "@ant-design/icons": "6.3.2",
+    "@vitejs/plugin-react": "5.2.0",
+    "antd": "6.5.0",
+    "dayjs": "1.11.21",
+    "vite": "7.3.6",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {}
+}
