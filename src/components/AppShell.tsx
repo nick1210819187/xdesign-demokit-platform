@@ -27,6 +27,8 @@ import { firstSelectable, navigation, primaryModules, type NavItem, type Primary
 const primaryIconVersion = 'v23';
 type NavTheme = 'dark' | 'light';
 
+const assetPath = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`;
+
 type AppShellProps = {
   activePrimary: PrimaryKey;
   activeSecondary: string;
@@ -190,8 +192,8 @@ export function AppShell({ activePrimary, activeSecondary, children, onNavigate 
     <div className={`app-shell nav-theme-${navTheme}${collapsed ? ' nav-collapsed' : ''}`}>
       <header className="topbar">
         <div className="brand-lockup" aria-label="FusionOne Center">
-          <img className="brand-mark" src="/assets/topbar/fusionone-mark.png" alt="" draggable={false} />
-          <img className="brand-wordmark" src="/assets/topbar/fusionone-wordmark.svg" alt="FusionOne Center" draggable={false} />
+          <img className="brand-mark" src={assetPath('/assets/topbar/fusionone-mark.png')} alt="" draggable={false} />
+          <img className="brand-wordmark" src={assetPath('/assets/topbar/fusionone-wordmark.svg')} alt="FusionOne Center" draggable={false} />
         </div>
         <div className="top-actions">
           <Tooltip title="界面主题">
@@ -216,7 +218,7 @@ export function AppShell({ activePrimary, activeSecondary, children, onNavigate 
           <Tooltip title="关于"><Button type="text" icon={<InfoCircleOutlined />} /></Tooltip>
           <Dropdown menu={{ items: [{ key: 'profile', label: '个人信息' }, { key: 'logout', label: '退出登录' }] }}>
             <button className="user-account" type="button">
-              <Avatar size={32} src="/assets/avatar/admin.svg" />
+              <Avatar size={32} src={assetPath('/assets/avatar/admin.svg')} />
               <span className="user-meta">
                 <span className="user-name">Admin</span>
                 <span className="user-role">系统管理员</span>
@@ -321,8 +323,8 @@ export function AppShell({ activePrimary, activeSecondary, children, onNavigate 
         <Typography.Text className="theme-modal-subtitle" type="secondary">设置界面主题</Typography.Text>
         <Radio.Group className="theme-card-grid" value={themeDraft} onChange={(event) => setThemeDraft(event.target.value)}>
           {[
-            { value: 'light', title: '浅色导航（默认）', description: '一级与二级导航均为浅色', preview: '/assets/theme/light-navigation.png' },
-            { value: 'dark', title: '深色导航', description: '顶部与侧边导航均为深色', preview: '/assets/theme/dark-navigation.png' },
+            { value: 'light', title: '浅色导航（默认）', description: '一级与二级导航均为浅色', preview: assetPath('/assets/theme/light-navigation.png') },
+            { value: 'dark', title: '深色导航', description: '顶部与侧边导航均为深色', preview: assetPath('/assets/theme/dark-navigation.png') },
           ].map((item) => (
             <Radio key={item.value} value={item.value} className={`theme-card-option ${themeDraft === item.value ? 'selected' : ''}`}>
               <img className="theme-card-preview" src={item.preview} alt="" draggable={false} />

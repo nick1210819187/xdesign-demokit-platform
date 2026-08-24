@@ -5,6 +5,8 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 
 type ChoiceKey = 'create' | 'template' | 'clone' | 'import' | 'convert';
 
+const assetPath = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`;
+
 const creationChoices: Array<{
   key: ChoiceKey;
   title: string;
@@ -16,35 +18,35 @@ const creationChoices: Array<{
     key: 'create',
     title: '创建新虚拟机',
     description: '此选项将指导您完成创建新虚拟机的过程。您可以自定义 CPU、内存、网卡和磁盘。创建之后将需要安装客户机操作系统。',
-    image: '/assets/card-choice/create-vm.png',
+    image: assetPath('/assets/card-choice/create-vm.png'),
     tint: '18, 77, 238',
   },
   {
     key: 'template',
     title: '模板部署虚拟机',
     description: '此选项将指导您完成从模板部署虚拟机的过程。模板是最佳配置的虚拟机映像，使您轻松创建可以立即使用的虚拟机。',
-    image: '/assets/card-choice/template-deploy.png',
+    image: assetPath('/assets/card-choice/template-deploy.png'),
     tint: '122, 90, 248',
   },
   {
     key: 'clone',
     title: '克隆虚拟机',
     description: '此选项将指导您完成部署现有虚拟机副本的过程。',
-    image: '/assets/card-choice/clone-vm.png',
+    image: assetPath('/assets/card-choice/clone-vm.png'),
     tint: '22, 199, 190',
   },
   {
     key: 'import',
     title: '导入虚拟机',
     description: '此选项将指导您完成从本地或网络上的虚拟机模板文件来创建一台完整的虚拟机。',
-    image: '/assets/card-choice/import-vm.png',
+    image: assetPath('/assets/card-choice/import-vm.png'),
     tint: '18, 77, 238',
   },
   {
     key: 'convert',
     title: '模板转为虚拟机',
     description: '此选项将指导您完成将模板转化为一个虚拟机。',
-    image: '/assets/card-choice/template-convert.png',
+    image: assetPath('/assets/card-choice/template-convert.png'),
     tint: '74, 130, 255',
   },
 ];
