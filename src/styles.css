@@ -1705,6 +1705,32 @@ body.is-resizing-table-column {
   max-width: none;
 }
 
+.config-popover {
+  width: 560px;
+}
+
+.parameter-summary-popover {
+  width: 280px;
+}
+
+.config-popover .ant-table-wrapper {
+  font-size: 12px;
+}
+
+.parameter-summary-popover .ant-descriptions {
+  min-width: 0;
+}
+
+.parameter-summary-popover .ant-descriptions-item-label {
+  width: 132px;
+  color: var(--text-2);
+}
+
+.config-detail-trigger.ant-btn {
+  height: 20px;
+  padding: 0;
+}
+
 .number-field {
   min-width: 108px;
 }

@@ -12,6 +12,7 @@ import {
   Input,
   InputNumber,
   Modal,
+  Popover,
   Progress,
   Radio,
   Select,
@@ -124,6 +125,44 @@ const affinityRows = Array.from({ length: 8 }, (_, index) => ({
   operator: index % 3 === 0 ? 'In' : 'Equals',
   value: index % 2 === 0 ? 'gpu-compute' : 'nvidia',
 }));
+
+function InferenceParametersPopover() {
+  return (
+    <div className="config-popover parameter-summary-popover">
+      <Descriptions
+        size="small"
+        colon={false}
+        column={1}
+        items={[
+          { key: 'input', label: '最大输入 Token', children: '2048' },
+          { key: 'output', label: '最大输出 Token', children: '2048' },
+          { key: 'batch', label: '批处理 Token 上限', children: '系统默认' },
+          { key: 'code', label: '远程代码加载', children: <Badge status="success" text="开启" /> },
+        ]}
+      />
+    </div>
+  );
+}
+
+function AffinityRulesPopover() {
+  return (
+    <div className="config-popover affinity-popover">
+      <Table
+        size="small"
+        rowKey="key"
+        dataSource={affinityRows}
+        pagination={false}
+        scroll={{ x: 640, y: 220 }}
+        columns={[
+          { title: '属性', dataIndex: 'property', width: 250 },
+          { title: '类型', dataIndex: 'type', width: 130 },
+          { title: '操作符', dataIndex: 'operator', width: 100 },
+          { title: '取值', dataIndex: 'value', width: 140 },
+        ]}
+      />
+    </div>
+  );
+}
 
 function FieldHelp({ children, tip }: { children: string; tip?: string }) {
   return (
@@ -503,7 +542,20 @@ export function OnlineServicePage() {
             { title: '内存（GiB）', dataIndex: 'memory', width: 120 },
             { title: '共享内存（GiB）', dataIndex: 'sharedMemory', width: 140 },
             { title: '节点数量', dataIndex: 'nodes', width: 100 },
-            { title: '参数配置', width: 100, render: () => <Button type="link" size="small">详情</Button> },
+            {
+              title: '参数配置',
+              width: 100,
+              render: () => (
+                <Popover
+                  arrow
+                  placement="leftTop"
+                  trigger="hover"
+                  content={<InferenceParametersPopover />}
+                >
+                  <Button type="link" size="small">详情</Button>
+                </Popover>
+              ),
+            },
           ]}
         />
       </section>
@@ -512,7 +564,23 @@ export function OnlineServicePage() {
         <Descriptions colon={false} column={4} items={[
           { key: 'route', label: '高性能路由', children: <Badge status="success" text="启用" /> },
           { key: 'scale', label: '扩缩容', children: '关闭' },
-          { key: 'affinity', label: '节点亲和性', children: affinity ? <Badge status="success" text="启用" /> : '关闭' },
+          {
+            key: 'affinity',
+            label: '节点亲和性',
+            children: affinity ? (
+              <Space size={4}>
+                <Badge status="success" text="启用" />
+                <Popover
+                  arrow
+                  placement="top"
+                  trigger="hover"
+                  content={<AffinityRulesPopover />}
+                >
+                  <Button className="config-detail-trigger" type="link" size="small">详情</Button>
+                </Popover>
+              </Space>
+            ) : '关闭',
+          },
           { key: 'mount', label: '文件管理挂载', children: '关闭' },
         ]} />
       </section>
