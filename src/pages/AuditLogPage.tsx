@@ -11,7 +11,6 @@ import {
   Drawer,
   Form,
   Input,
-  Segmented,
   Select,
   Space,
   Table,
@@ -100,6 +99,9 @@ const operationTypeOptions = Array.from(new Set(auditLogs.map((item) => item.ope
   value,
 }));
 
+const logTypeOptions = ['全部', '操作日志', '安全日志'].map((value) => ({ label: value, value }));
+const resultOptions = ['全部', '成功', '失败', '进行中'].map((value) => ({ label: value, value }));
+
 const moreActionItems: MenuProps['items'] = [
   { key: 'pause', label: '暂停任务' },
   { key: 'stop', label: '停止任务' },
@@ -157,10 +159,41 @@ function resultBadge(value: AuditLog['result']) {
 
 function TwoLineCell({ children, mono = false }: { children: string; mono?: boolean }) {
   return (
-    <Typography.Text className={`two-line-cell ${mono ? 'mono' : ''}`} title={children}>
-      {children}
-    </Typography.Text>
+    <Tooltip title={children} mouseEnterDelay={0.4}>
+      <Typography.Text className={`two-line-cell ${mono ? 'mono' : ''}`}>
+        {children}
+      </Typography.Text>
+    </Tooltip>
   );
+}
+
+function SingleLineCell({ children, mono = false }: { children: string; mono?: boolean }) {
+  return (
+    <Tooltip title={children} mouseEnterDelay={0.4}>
+      <Typography.Text className={`single-line-cell ${mono ? 'mono' : ''}`}>
+        {children}
+      </Typography.Text>
+    </Tooltip>
+  );
+}
+
+function OperationNameCell({ value, row }: { value: string; row: AuditLog }) {
+  if (row.rowExample === 'double') {
+    return (
+      <Tooltip title="双行内容由真实文字自然撑开，不固定行高" mouseEnterDelay={0.4}>
+        <span className="table-cell-stack">
+          <span>{value}</span>
+          <Typography.Text type="secondary">第二行辅助信息</Typography.Text>
+        </span>
+      </Tooltip>
+    );
+  }
+
+  if (row.rowExample === 'single') {
+    return <SingleLineCell>{value}</SingleLineCell>;
+  }
+
+  return <TwoLineCell>{value}</TwoLineCell>;
 }
 
 function ResizableHeaderCell({
@@ -222,9 +255,15 @@ type AuditLogPageProps = {
   title?: string;
   showRetention?: boolean;
   tableMode?: 'standard' | 'complex';
+  queryMode?: 'simple' | 'full';
 };
 
-export function AuditLogPage({ title = '审计日志', showRetention = true, tableMode = 'standard' }: AuditLogPageProps = {}) {
+export function AuditLogPage({
+  title = '审计日志',
+  showRetention = true,
+  tableMode = 'standard',
+  queryMode = 'full',
+}: AuditLogPageProps = {}) {
   const { message } = AntdApp.useApp();
   const [form] = Form.useForm<QueryValues>();
   const [query, setQuery] = useState<QueryValues>({ logType: '全部', result: '全部' });
@@ -238,6 +277,7 @@ export function AuditLogPage({ title = '审计日志', showRetention = true, tab
   const [tableScrollY, setTableScrollY] = useState(275);
   const tableSurfaceRef = useRef<HTMLElement | null>(null);
   const isComplexTable = tableMode === 'complex';
+  const isSimpleQuery = queryMode === 'simple';
   const hasSelectedRows = selectedRowKeys.length > 0;
 
   const guardSelection = (action: string) => {
@@ -337,6 +377,11 @@ export function AuditLogPage({ title = '审计日志', showRetention = true, tab
       dataIndex: 'logType',
       width: columnWidths.logType,
       fixed: 'start',
+      filters: [
+        { text: '安全日志', value: '安全日志' },
+        { text: '操作日志', value: '操作日志' },
+      ],
+      onFilter: (value, record) => record.logType === value,
       render: (value: AuditLog['logType']) => <Tag color={value === '安全日志' ? 'blue' : 'default'}>{value}</Tag>,
     },
     {
@@ -346,7 +391,7 @@ export function AuditLogPage({ title = '审计日志', showRetention = true, tab
       width: columnWidths.operationName,
       sorter: (a, b) => a.operationName.localeCompare(b.operationName),
       fixed: 'start',
-      render: (value: string) => <TwoLineCell>{value}</TwoLineCell>,
+      render: (value: string, row) => <OperationNameCell value={value} row={row} />,
     },
     {
       title: '操作类型',
@@ -396,7 +441,7 @@ export function AuditLogPage({ title = '审计日志', showRetention = true, tab
       dataIndex: 'time',
       width: columnWidths.time,
       sorter: (a, b) => a.time.localeCompare(b.time),
-      render: (value: string) => <TwoLineCell mono>{value}</TwoLineCell>,
+      render: (value: string) => <SingleLineCell mono>{value}</SingleLineCell>,
     },
     {
       title: '详情',
@@ -476,7 +521,7 @@ export function AuditLogPage({ title = '审计日志', showRetention = true, tab
     { title: 'Version', dataIndex: 'version', key: 'version', render: (value: string) => <TwoLineCell mono>{value}</TwoLineCell> },
     { title: 'Upgraded', dataIndex: 'upgradeNum', key: 'upgradeNum' },
     { title: 'Creator', dataIndex: 'creator', key: 'creator' },
-    { title: 'Date', dataIndex: 'createdAt', key: 'createdAt', render: (value: string) => <TwoLineCell mono>{value}</TwoLineCell> },
+    { title: 'Date', dataIndex: 'createdAt', key: 'createdAt', render: (value: string) => <SingleLineCell mono>{value}</SingleLineCell> },
     {
       title: 'Action',
       key: 'operation',
@@ -548,10 +593,7 @@ export function AuditLogPage({ title = '审计日志', showRetention = true, tab
         >
           <div className="audit-query-grid">
             <Form.Item label="日志类型" name="logType">
-              <Segmented options={['全部', '操作日志', '安全日志']} />
-            </Form.Item>
-            <Form.Item label="操作结果" name="result">
-              <Segmented options={['全部', '成功', '失败', '进行中']} />
+              <Select options={logTypeOptions} />
             </Form.Item>
             <Form.Item label="时间筛选" name="time">
               <RangePicker
@@ -564,33 +606,40 @@ export function AuditLogPage({ title = '审计日志', showRetention = true, tab
                 ]}
               />
             </Form.Item>
-            <Form.Item label="操作用户IP" name="ip">
-              <Input allowClear placeholder="请输入操作用户IP" />
-            </Form.Item>
-            <Form.Item label="操作类型" name="operationType">
-              <Select allowClear showSearch={{ optionFilterProp: 'label' }} placeholder="请选择操作类型" options={operationTypeOptions} />
-            </Form.Item>
-            <Form.Item label="操作对象" name="target">
-              <Input allowClear placeholder="请输入操作对象" />
-            </Form.Item>
             <Form.Item label="操作用户" name="user">
               <Input allowClear placeholder="请输入操作用户" />
             </Form.Item>
-            {expanded ? (
+            {!isSimpleQuery ? (
               <>
-                <Form.Item label="日志详情" name="detail">
-                  <Input allowClear placeholder="请输入日志详情" />
+                <Form.Item label="操作结果" name="result">
+                  <Select options={resultOptions} />
                 </Form.Item>
+                <Form.Item label="操作用户IP" name="ip">
+                  <Input allowClear placeholder="请输入操作用户IP" />
+                </Form.Item>
+                <Form.Item label="操作类型" name="operationType">
+                  <Select allowClear placeholder="请选择操作类型" options={operationTypeOptions} />
+                </Form.Item>
+                <Form.Item label="操作对象" name="target">
+                  <Input allowClear placeholder="请输入操作对象" />
+                </Form.Item>
+                {expanded ? (
+                  <Form.Item label="日志详情" name="detail">
+                    <Input allowClear placeholder="请输入日志详情" />
+                  </Form.Item>
+                ) : null}
               </>
             ) : null}
             <Form.Item className="query-actions">
               <Space className="query-action-group">
                 <Button onClick={reset}>重置</Button>
                 <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>查询</Button>
-                <Button className="expand-toggle-button" type="link" onClick={() => setExpanded((value) => !value)}>
-                  <span>{expanded ? '收起更多' : '展开更多'}</span>
-                  {expanded ? <UpOutlined className="expand-toggle-icon" /> : <DownOutlined className="expand-toggle-icon" />}
-                </Button>
+                {!isSimpleQuery ? (
+                  <Button className="expand-toggle-button" type="link" onClick={() => setExpanded((value) => !value)}>
+                    <span>{expanded ? '收起更多' : '展开更多'}</span>
+                    {expanded ? <UpOutlined className="expand-toggle-icon" /> : <DownOutlined className="expand-toggle-icon" />}
+                  </Button>
+                ) : null}
               </Space>
             </Form.Item>
           </div>
@@ -656,7 +705,7 @@ export function AuditLogPage({ title = '审计日志', showRetention = true, tab
           <Table<ComplexTableRow>
             className="audit-table complex-nested-table"
             rowKey="key"
-            size="middle"
+            size="large"
             columns={complexColumns}
             dataSource={complexRows}
             expandable={{ expandedRowRender, defaultExpandedRowKeys: ['0'] }}
@@ -679,7 +728,7 @@ export function AuditLogPage({ title = '审计日志', showRetention = true, tab
           <Table<AuditLog>
             className="audit-table"
             rowKey="key"
-            size="middle"
+            size="large"
             columns={columns}
             dataSource={filteredRows}
             components={{ header: { cell: ResizableHeaderCell } }}

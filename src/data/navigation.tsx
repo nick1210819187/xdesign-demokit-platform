@@ -14,6 +14,8 @@ import {
   SafetyCertificateOutlined,
   SettingOutlined,
   TableOutlined,
+  BarChartOutlined,
+  LayoutOutlined,
   TeamOutlined,
   ToolOutlined,
   UserOutlined,
@@ -38,7 +40,7 @@ export const primaryModules: Array<{ key: PrimaryKey; label: string; iconKey: st
   { key: 'monitor', label: '监控', iconKey: 'monitor' },
   { key: 'ops', label: '运维', iconKey: 'ops' },
   { key: 'system', label: '系统', iconKey: 'system' },
-  { key: 'kit', label: '组件', iconKey: 'app' },
+  { key: 'kit', label: '示例', iconKey: 'app' },
 ];
 
 export const navigation: Record<PrimaryKey, NavItem[]> = {
@@ -183,12 +185,14 @@ export const navigation: Record<PrimaryKey, NavItem[]> = {
     { key: 'task-center', label: '任务中心', icon: <TeamOutlined /> },
   ],
   kit: [
-    { key: 'component-library', label: '组件 DemoKit', icon: <AppstoreOutlined /> },
     { key: 'secondary-page', label: '二级页面', icon: <DeploymentUnitOutlined /> },
     { key: 'card-choice', label: '卡片选择', icon: <AppstoreOutlined /> },
     { key: 'normal-table', label: '普通表格', icon: <TableOutlined /> },
     { key: 'complex-table', label: '复杂表格', icon: <TableOutlined /> },
     { key: 'filter-card', label: '左筛右卡', icon: <AppstoreOutlined /> },
+    { key: 'data-visualization', label: '数据可视化（未启用）', icon: <BarChartOutlined /> },
+    { key: 'custom-home', label: '自定义首页（未启用）', icon: <LayoutOutlined /> },
+    { key: 'component-library', label: '组件 DemoKit', icon: <AppstoreOutlined /> },
   ],
 };
 

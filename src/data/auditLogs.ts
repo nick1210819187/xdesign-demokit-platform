@@ -1,5 +1,6 @@
 export type AuditLog = {
   key: string;
+  rowExample?: 'single' | 'double';
   logType: '安全日志' | '操作日志';
   operationName: string;
   operationType: 'Appliance' | 'Resource' | 'System';
@@ -143,7 +144,7 @@ const modules = ['Auth', 'Resource', 'System', 'Model', 'Network'];
 export const auditLogs: AuditLog[] = Array.from({ length: 100 }, (_, index) => {
   const seed = auditLogSeeds[index % auditLogSeeds.length];
   const sequence = index + 1;
-  return {
+  const row: AuditLog = {
     ...seed,
     key: `audit-${String(sequence).padStart(3, '0')}`,
     target: targets[index % targets.length],
@@ -154,6 +155,26 @@ export const auditLogs: AuditLog[] = Array.from({ length: 100 }, (_, index) => {
     module: modules[index % modules.length],
     detail: `${seed.detail} Request trace ${String(sequence).padStart(4, '0')} completed with sampled metadata and audit context.`,
   };
+
+  if (index === 0) {
+    return {
+      ...row,
+      rowExample: 'single',
+      operationName: '这里是单行表格',
+      detail: '用于展示 Ant Design 默认单行表格。',
+    };
+  }
+
+  if (index === 1) {
+    return {
+      ...row,
+      rowExample: 'double',
+      operationName: '这里是双行表格',
+      detail: '用于展示 Ant Design 内容自然撑开的双行表格。',
+    };
+  }
+
+  return row;
 });
 
 function dayOffsetTime(sequence: number) {

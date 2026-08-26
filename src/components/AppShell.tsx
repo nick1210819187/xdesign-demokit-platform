@@ -217,7 +217,7 @@ export function AppShell({ activePrimary, activeSecondary, children, onNavigate 
   }, [flyoutOpen, flyoutAnchor, flyoutPrimary]);
 
   return (
-    <div className={`app-shell nav-theme-${navTheme}${collapsed ? ' nav-collapsed' : ''}`}>
+    <div className={`app-shell nav-theme-${navTheme}${collapsed ? ' nav-collapsed' : ''}${activePrimary === 'home' ? ' home-preview-shell' : ''}`}>
       <header className="topbar">
         <div className="brand-lockup" aria-label="FusionOne Center">
           <img className="brand-mark" src={assetPath('/assets/topbar/fusionone-mark.png')} alt="" draggable={false} />

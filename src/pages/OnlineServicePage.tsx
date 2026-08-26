@@ -166,7 +166,7 @@ function AffinityRulesPopover() {
 
 function FieldHelp({ children, tip }: { children: string; tip?: string }) {
   return (
-    <Space size={6}>
+    <Space size={4}>
       {children}
       {tip ? <Tooltip title={tip}><QuestionCircleOutlined className="field-help" /></Tooltip> : null}
     </Space>
@@ -432,7 +432,7 @@ export function OnlineServicePage() {
 
       <section className="form-section table-section">
         <h2>资源规格</h2>
-        <Table rowKey="key" columns={resourceColumns} dataSource={resourceSpecs} pagination={false} scroll={{ x: 1120 }} />
+        <Table size="middle" rowKey="key" columns={resourceColumns} dataSource={resourceSpecs} pagination={false} scroll={{ x: 1120 }} />
         <Space className="add-row">
           <Button type="link" icon={<PlusOutlined />} onClick={() => setResourceSpecs((items) => [...items, { ...baseSpec, key: String(items.length + 1) }])}>添加资源规格</Button>
           <Typography.Text type="secondary">还可以添加 {64 - resourceSpecs.length} 条资源规格</Typography.Text>
@@ -530,6 +530,7 @@ export function OnlineServicePage() {
           { key: 'instance', label: '实例数量', children: 1 },
         ]} />
         <Table
+          size="middle"
           rowKey="key"
           dataSource={resourceSpecs}
           pagination={false}

@@ -189,7 +189,7 @@ export function ComponentLibraryPage() {
           <Tag>Table / Descriptions / Card / Statistic / Tag / Badge / Timeline / Tree</Tag>
         </div>
         <div className="stack">
-          <Table rowKey="key" size="middle" columns={tableColumns} dataSource={tableRows} rowSelection={{}} pagination={{ pageSize: 3 }} />
+          <Table rowKey="key" size="large" columns={tableColumns} dataSource={tableRows} rowSelection={{}} pagination={{ pageSize: 3 }} />
           <div className="tile-grid two">
             <ComponentTile name="Descriptions / Statistic" type="详情">
               <Descriptions column={2} size="small" items={[
