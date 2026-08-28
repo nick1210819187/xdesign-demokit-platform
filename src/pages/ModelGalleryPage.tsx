@@ -225,6 +225,10 @@ function getLogoClass(tone: ModelItem['logoTone']) {
   return `model-logo ${tone}`;
 }
 
+function getDisplayModelName(name: string) {
+  return name.split('/').pop() ?? name;
+}
+
 function hasFilter(filters: Record<FilterKey, string[]>) {
   return Object.values(filters).some((value) => value.length > 0);
 }
@@ -382,7 +386,9 @@ export function ModelGalleryPage() {
                   {model.logoText}
                 </Avatar>
                 <div className="model-card-body">
-                  <Typography.Text strong className="model-name">{model.name}</Typography.Text>
+                  <Typography.Text strong className="model-name">
+                    {getDisplayModelName(model.name)}
+                  </Typography.Text>
                   <Typography.Text type="secondary" className="model-provider">{model.provider} / {model.org}</Typography.Text>
                 </div>
               </div>

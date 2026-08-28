@@ -11,6 +11,7 @@ import { OnlineServicePage } from './pages/OnlineServicePage';
 import { PlaceholderPage } from './pages/PlaceholderPage';
 import { DataVisualizationPage } from './pages/DataVisualizationPage';
 import { CustomHomePage } from './pages/CustomHomePage';
+import { DetailPage } from './pages/DetailPage';
 
 const pageTitles: Record<string, string> = {
   os: '操作系统',
@@ -23,6 +24,7 @@ const pageTitles: Record<string, string> = {
   'component-library': '组件 DemoKit',
   'secondary-page': '二级页面',
   'custom-home': '自定义首页',
+  'detail-page': '详情页',
   'card-choice': '卡片选择',
   'normal-table': '普通表格',
   'complex-table': '复杂表格',
@@ -50,6 +52,7 @@ export default function App() {
     if (activePrimary === 'kit' && activeSecondary === 'component-library') return <ComponentLibraryPage />;
     if (activePrimary === 'kit' && activeSecondary === 'secondary-page') return <OnlineServicePage />;
     if (activePrimary === 'kit' && activeSecondary === 'custom-home') return <CustomHomePage />;
+    if (activePrimary === 'kit' && activeSecondary === 'detail-page') return <DetailPage />;
     if (activePrimary === 'kit' && activeSecondary === 'card-choice') return <CardChoicePage />;
     if (activePrimary === 'kit' && activeSecondary === 'normal-table') {
       return <AuditLogPage title="普通表格" showRetention={false} queryMode="simple" />;

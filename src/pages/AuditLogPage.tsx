@@ -592,10 +592,10 @@ export function AuditLogPage({
           onFinish={(values) => setQuery(values)}
         >
           <div className="audit-query-grid">
-            <Form.Item label="日志类型" name="logType">
+            <Form.Item className="query-field" label="日志类型" name="logType">
               <Select options={logTypeOptions} />
             </Form.Item>
-            <Form.Item label="时间筛选" name="time">
+            <Form.Item className="query-field query-field-range" label="时间筛选" name="time">
               <RangePicker
                 allowClear
                 format="YYYY-MM-DD"
@@ -606,25 +606,25 @@ export function AuditLogPage({
                 ]}
               />
             </Form.Item>
-            <Form.Item label="操作用户" name="user">
+            <Form.Item className="query-field" label="操作用户" name="user">
               <Input allowClear placeholder="请输入操作用户" />
             </Form.Item>
             {!isSimpleQuery ? (
               <>
-                <Form.Item label="操作结果" name="result">
+                <Form.Item className="query-field" label="操作结果" name="result">
                   <Select options={resultOptions} />
                 </Form.Item>
-                <Form.Item label="操作用户IP" name="ip">
+                <Form.Item className="query-field" label="操作用户IP" name="ip">
                   <Input allowClear placeholder="请输入操作用户IP" />
                 </Form.Item>
-                <Form.Item label="操作类型" name="operationType">
+                <Form.Item className="query-field" label="操作类型" name="operationType">
                   <Select allowClear placeholder="请选择操作类型" options={operationTypeOptions} />
                 </Form.Item>
-                <Form.Item label="操作对象" name="target">
+                <Form.Item className="query-field" label="操作对象" name="target">
                   <Input allowClear placeholder="请输入操作对象" />
                 </Form.Item>
                 {expanded ? (
-                  <Form.Item label="日志详情" name="detail">
+                  <Form.Item className="query-field" label="日志详情" name="detail">
                     <Input allowClear placeholder="请输入日志详情" />
                   </Form.Item>
                 ) : null}
