@@ -176,124 +176,6 @@ function PermissionAppendableDemo() {
   );
 }
 
-function ComponentAppendableDemo() {
-  const [rows, setRows] = useState([0]);
-  const hasActionColumn = rows.length > 1;
-
-  return (
-    <Form layout="vertical" className="appendable-form">
-      <div className="appendable-group">
-        <div className="appendable-group-head">
-          <Typography.Text strong>首页组件</Typography.Text>
-          <Tag>最少一项</Tag>
-        </div>
-        <div className="appendable-rows">
-          {rows.map((id, index) => (
-            <div className={`appendable-row appendable-row-multi${hasActionColumn ? ' has-action' : ''}${index > 0 ? ' is-unlabeled' : ''}`} key={id}>
-              <div className="appendable-controls">
-                <Form.Item label={index === 0 ? '组件' : undefined}>
-                  <Select
-                    defaultValue={index === 0 ? 'resource' : undefined}
-                    options={[
-                      { value: 'resource', label: '资源概览' },
-                      { value: 'alarm', label: '告警统计' },
-                      { value: 'task', label: '待办任务' },
-                    ]}
-                    placeholder="请选择组件"
-                  />
-                </Form.Item>
-                <Form.Item label={index === 0 ? '展示宽度' : undefined}>
-                  <Select
-                    defaultValue="2"
-                    options={[
-                      { value: '1', label: '1 栏' },
-                      { value: '2', label: '2 栏' },
-                      { value: '4', label: '整行' },
-                    ]}
-                  />
-                </Form.Item>
-              </div>
-              {hasActionColumn && (
-                <AppendableRemoveButton
-                  label={`删除组件 ${index + 1}`}
-                  onClick={() => setRows((items) => items.filter((item) => item !== id))}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-        <div className="appendable-footer">
-          <Button
-            className="appendable-add"
-            icon={<PlusOutlined />}
-            type="link"
-            onClick={() => setRows((items) => [...items, Math.max(...items) + 1])}
-          >
-            添加组件
-          </Button>
-          <Typography.Text type="secondary">至少保留 1 个组件</Typography.Text>
-        </div>
-      </div>
-    </Form>
-  );
-}
-
-function ListAppendableDemo() {
-  const [rows, setRows] = useState([0]);
-  const hasActionColumn = rows.length > 1;
-
-  return (
-    <Form layout="vertical" className="appendable-form">
-      <div className="appendable-group">
-        <div className="appendable-group-head">
-          <Typography.Text strong>访问地址</Typography.Text>
-          <Tag>列表行</Tag>
-        </div>
-        <div className="appendable-rows">
-          {rows.map((id, index) => (
-            <div className={`appendable-row appendable-row-endpoint${hasActionColumn ? ' has-action' : ''}${index > 0 ? ' is-unlabeled' : ''}`} key={id}>
-              <div className="appendable-controls">
-                <Form.Item label={index === 0 ? '协议' : undefined}>
-                  <Select
-                    defaultValue="https"
-                    options={[
-                      { value: 'https', label: 'HTTPS' },
-                      { value: 'http', label: 'HTTP' },
-                    ]}
-                  />
-                </Form.Item>
-                <Form.Item label={index === 0 ? '地址' : undefined}>
-                  <Input placeholder={index === 0 ? '请输入访问地址' : '请输入新增地址'} />
-                </Form.Item>
-                <Form.Item label={index === 0 ? '端口' : undefined}>
-                  <InputNumber min={1} max={65535} defaultValue={443} />
-                </Form.Item>
-              </div>
-              {hasActionColumn && (
-                <AppendableRemoveButton
-                  label={`删除地址 ${index + 1}`}
-                  onClick={() => setRows((items) => items.filter((item) => item !== id))}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-        <div className="appendable-footer">
-          <Button
-            className="appendable-add"
-            icon={<PlusOutlined />}
-            type="link"
-            onClick={() => setRows((items) => [...items, Math.max(...items) + 1])}
-          >
-            添加地址
-          </Button>
-          <Typography.Text type="secondary">同组输入直接向下追加</Typography.Text>
-        </div>
-      </div>
-    </Form>
-  );
-}
-
 function ConditionAppendableDemo() {
   const [rows, setRows] = useState([0]);
   const hasActionColumn = rows.length > 1;
@@ -688,12 +570,6 @@ export function ComponentLibraryPage() {
         <div className="appendable-showcase-grid">
           <ComponentTile name="添加权限" type="Modal">
             <PermissionAppendableDemo />
-          </ComponentTile>
-          <ComponentTile name="添加组件" type="Homepage">
-            <ComponentAppendableDemo />
-          </ComponentTile>
-          <ComponentTile name="添加地址" type="Form">
-            <ListAppendableDemo />
           </ComponentTile>
           <ComponentTile name="添加条件" type="Page">
             <ConditionAppendableDemo />

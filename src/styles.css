@@ -2426,7 +2426,9 @@ body.is-resizing-table-column {
 }
 
 .create-user-role-add.ant-btn-link {
+  width: fit-content;
   height: 32px;
+  justify-self: start;
   margin-top: 0;
   padding-inline: 0;
 }
