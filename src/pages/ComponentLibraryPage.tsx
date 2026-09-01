@@ -44,7 +44,7 @@ import {
   Upload,
 } from 'antd';
 import type { TableProps, TimeRangePickerProps, TransferProps, UploadProps } from 'antd';
-import { CloudUploadOutlined, MoreOutlined, SettingOutlined } from '@ant-design/icons';
+import { CloudUploadOutlined, DeleteOutlined, MoreOutlined, PlusOutlined, SettingOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
 
@@ -105,6 +105,446 @@ function ComponentTile({ name, type, children }: { name: string; type: string; c
     <Card className="component-tile" size="small" title={name} extra={<Tag>{type}</Tag>}>
       {children}
     </Card>
+  );
+}
+
+function AppendableRemoveButton({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <Tooltip title={label}>
+      <Button
+        aria-label={label}
+        className="appendable-remove"
+        danger
+        icon={<DeleteOutlined />}
+        type="text"
+        onClick={onClick}
+      />
+    </Tooltip>
+  );
+}
+
+function PermissionAppendableDemo() {
+  const [rows, setRows] = useState([{ id: 0, locked: true }]);
+
+  return (
+    <Form layout="vertical" className="appendable-form">
+      <div className="appendable-group">
+        <div className="appendable-group-head">
+          <Typography.Text strong>角色权限</Typography.Text>
+          <Tag>默认项不可删</Tag>
+        </div>
+        <div className="appendable-rows">
+          {rows.map((row, index) => (
+            <div className={`appendable-row appendable-row-compact${rows.length > 1 ? ' has-action' : ''}`} key={row.id}>
+              <Form.Item>
+                <Select
+                  defaultValue={index === 0 ? 'admin' : undefined}
+                  optionFilterProp="label"
+                  options={[
+                    { value: 'admin', label: '系统管理员' },
+                    { value: 'ops', label: '运维管理员' },
+                    { value: 'audit', label: '审计员' },
+                  ]}
+                  placeholder="请选择角色"
+                  showSearch
+                />
+              </Form.Item>
+              {rows.length > 1 && (
+                row.locked ? <span className="appendable-action-placeholder" aria-hidden /> : (
+                  <AppendableRemoveButton
+                    label={`移除角色 ${index + 1}`}
+                    onClick={() => setRows((items) => items.filter((item) => item.id !== row.id))}
+                  />
+                )
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="appendable-footer">
+          <Button
+            className="appendable-add"
+            icon={<PlusOutlined />}
+            type="link"
+            onClick={() => setRows((items) => [...items, { id: Math.max(...items.map((item) => item.id)) + 1, locked: false }])}
+          >
+            添加权限
+          </Button>
+          <Typography.Text type="secondary">默认权限不显示不可删图标</Typography.Text>
+        </div>
+      </div>
+    </Form>
+  );
+}
+
+function ComponentAppendableDemo() {
+  const [rows, setRows] = useState([0]);
+  const hasActionColumn = rows.length > 1;
+
+  return (
+    <Form layout="vertical" className="appendable-form">
+      <div className="appendable-group">
+        <div className="appendable-group-head">
+          <Typography.Text strong>首页组件</Typography.Text>
+          <Tag>最少一项</Tag>
+        </div>
+        <div className="appendable-rows">
+          {rows.map((id, index) => (
+            <div className={`appendable-row appendable-row-multi${hasActionColumn ? ' has-action' : ''}${index > 0 ? ' is-unlabeled' : ''}`} key={id}>
+              <div className="appendable-controls">
+                <Form.Item label={index === 0 ? '组件' : undefined}>
+                  <Select
+                    defaultValue={index === 0 ? 'resource' : undefined}
+                    options={[
+                      { value: 'resource', label: '资源概览' },
+                      { value: 'alarm', label: '告警统计' },
+                      { value: 'task', label: '待办任务' },
+                    ]}
+                    placeholder="请选择组件"
+                  />
+                </Form.Item>
+                <Form.Item label={index === 0 ? '展示宽度' : undefined}>
+                  <Select
+                    defaultValue="2"
+                    options={[
+                      { value: '1', label: '1 栏' },
+                      { value: '2', label: '2 栏' },
+                      { value: '4', label: '整行' },
+                    ]}
+                  />
+                </Form.Item>
+              </div>
+              {hasActionColumn && (
+                <AppendableRemoveButton
+                  label={`删除组件 ${index + 1}`}
+                  onClick={() => setRows((items) => items.filter((item) => item !== id))}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="appendable-footer">
+          <Button
+            className="appendable-add"
+            icon={<PlusOutlined />}
+            type="link"
+            onClick={() => setRows((items) => [...items, Math.max(...items) + 1])}
+          >
+            添加组件
+          </Button>
+          <Typography.Text type="secondary">至少保留 1 个组件</Typography.Text>
+        </div>
+      </div>
+    </Form>
+  );
+}
+
+function ListAppendableDemo() {
+  const [rows, setRows] = useState([0]);
+  const hasActionColumn = rows.length > 1;
+
+  return (
+    <Form layout="vertical" className="appendable-form">
+      <div className="appendable-group">
+        <div className="appendable-group-head">
+          <Typography.Text strong>访问地址</Typography.Text>
+          <Tag>列表行</Tag>
+        </div>
+        <div className="appendable-rows">
+          {rows.map((id, index) => (
+            <div className={`appendable-row appendable-row-endpoint${hasActionColumn ? ' has-action' : ''}${index > 0 ? ' is-unlabeled' : ''}`} key={id}>
+              <div className="appendable-controls">
+                <Form.Item label={index === 0 ? '协议' : undefined}>
+                  <Select
+                    defaultValue="https"
+                    options={[
+                      { value: 'https', label: 'HTTPS' },
+                      { value: 'http', label: 'HTTP' },
+                    ]}
+                  />
+                </Form.Item>
+                <Form.Item label={index === 0 ? '地址' : undefined}>
+                  <Input placeholder={index === 0 ? '请输入访问地址' : '请输入新增地址'} />
+                </Form.Item>
+                <Form.Item label={index === 0 ? '端口' : undefined}>
+                  <InputNumber min={1} max={65535} defaultValue={443} />
+                </Form.Item>
+              </div>
+              {hasActionColumn && (
+                <AppendableRemoveButton
+                  label={`删除地址 ${index + 1}`}
+                  onClick={() => setRows((items) => items.filter((item) => item !== id))}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="appendable-footer">
+          <Button
+            className="appendable-add"
+            icon={<PlusOutlined />}
+            type="link"
+            onClick={() => setRows((items) => [...items, Math.max(...items) + 1])}
+          >
+            添加地址
+          </Button>
+          <Typography.Text type="secondary">同组输入直接向下追加</Typography.Text>
+        </div>
+      </div>
+    </Form>
+  );
+}
+
+function ConditionAppendableDemo() {
+  const [rows, setRows] = useState([0]);
+  const hasActionColumn = rows.length > 1;
+
+  return (
+    <Form layout="vertical" className="appendable-form">
+      <div className="appendable-group">
+        <div className="appendable-group-head">
+          <Typography.Text strong>触发条件</Typography.Text>
+          <Tag>二级页面</Tag>
+        </div>
+        <div className="appendable-rows">
+          {rows.map((id, index) => (
+            <div className={`appendable-row appendable-row-condition${hasActionColumn ? ' has-action' : ''}${index > 0 ? ' is-unlabeled' : ''}`} key={id}>
+              <div className="appendable-controls">
+                <Form.Item label={index === 0 ? '指标' : undefined}>
+                  <Select
+                    defaultValue={index === 0 ? 'cpu' : undefined}
+                    options={[
+                      { value: 'cpu', label: 'CPU 使用率' },
+                      { value: 'memory', label: '内存使用率' },
+                      { value: 'delay', label: '响应延迟' },
+                    ]}
+                    placeholder="请选择指标"
+                  />
+                </Form.Item>
+                <Form.Item label={index === 0 ? '关系' : undefined}>
+                  <Select
+                    defaultValue="gt"
+                    options={[
+                      { value: 'gt', label: '大于' },
+                      { value: 'gte', label: '大于等于' },
+                      { value: 'lt', label: '小于' },
+                    ]}
+                  />
+                </Form.Item>
+                <Form.Item label={index === 0 ? '阈值' : undefined}>
+                  <InputNumber min={0} max={100} defaultValue={80} addonAfter="%" />
+                </Form.Item>
+              </div>
+              {hasActionColumn && (
+                <AppendableRemoveButton
+                  label={`删除条件 ${index + 1}`}
+                  onClick={() => setRows((items) => items.filter((item) => item !== id))}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="appendable-footer">
+          <Button
+            className="appendable-add"
+            icon={<PlusOutlined />}
+            type="link"
+            onClick={() => setRows((items) => [...items, Math.max(...items) + 1])}
+          >
+            添加条件
+          </Button>
+          <Typography.Text type="secondary">行内字段保持 8px 关系间距</Typography.Text>
+        </div>
+      </div>
+    </Form>
+  );
+}
+
+function SwitchPanelDemo() {
+  const [enabled, setEnabled] = useState(true);
+  const [rows, setRows] = useState([{ id: 1, enabled: true }]);
+
+  return (
+    <Form layout="vertical" className="switch-panel-form">
+      <Form.Item label="多推理服务">
+        <Switch checked={enabled} onChange={setEnabled} />
+      </Form.Item>
+      {enabled && (
+        <div className="switch-dependent-panel">
+          <div className="switch-endpoint-rows">
+            {rows.map((row, index) => (
+              <div className={`switch-endpoint-row${index > 0 ? ' is-unlabeled' : ''}`} key={row.id}>
+                <Form.Item label={index === 0 ? '服务端口号' : undefined}>
+                  <InputNumber min={1} max={65535} defaultValue={18000 + index} />
+                </Form.Item>
+                <Form.Item label={index === 0 ? 'API' : undefined}>
+                  <Input defaultValue="/v1/chat/completions" />
+                </Form.Item>
+                <div className="switch-endpoint-operation">
+                  {index === 0 && <Typography.Text className="switch-endpoint-operation-label">操作</Typography.Text>}
+                  <div className="switch-endpoint-operation-controls">
+                    <Switch
+                      size="small"
+                      checked={row.enabled}
+                      onChange={(value) => setRows((items) => items.map((item) => item.id === row.id ? { ...item, enabled: value } : item))}
+                    />
+                    {rows.length > 1 && (
+                      <AppendableRemoveButton
+                        label={`删除端口映射 ${index + 1}`}
+                        onClick={() => setRows((items) => items.filter((item) => item.id !== row.id))}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="appendable-footer">
+            <Button
+              className="appendable-add"
+              icon={<PlusOutlined />}
+              type="link"
+              onClick={() => setRows((items) => [...items, { id: Math.max(...items.map((item) => item.id)) + 1, enabled: true }])}
+            >
+              添加
+            </Button>
+            <Typography.Text type="secondary">您还可以添加 {28 - rows.length} 个端口映射</Typography.Text>
+          </div>
+        </div>
+      )}
+    </Form>
+  );
+}
+
+function SwitchPanelWideDemo() {
+  const [enabled, setEnabled] = useState(true);
+
+  return (
+    <Form layout="vertical" className="switch-panel-form switch-panel-form-wide">
+      <Form.Item label="启用限额">
+        <Switch checked={enabled} onChange={setEnabled} />
+      </Form.Item>
+      {enabled && (
+        <div className="switch-dependent-panel">
+          <div className="switch-panel-grid">
+            <Form.Item label="CPU 上限">
+              <InputNumber min={1} max={100} defaultValue={80} addonAfter="%" />
+            </Form.Item>
+            <Form.Item label="内存上限">
+              <InputNumber min={1} max={100} defaultValue={70} addonAfter="%" />
+            </Form.Item>
+            <Form.Item label="持续时间">
+              <InputNumber min={1} max={24} defaultValue={2} addonAfter="小时" />
+            </Form.Item>
+          </div>
+        </div>
+      )}
+    </Form>
+  );
+}
+
+type TableAppendableSpec = {
+  key: string;
+  engine: string;
+  accelerator: string;
+  cpu: number;
+  memory: number;
+};
+
+function TableAppendableDemo() {
+  const [rows, setRows] = useState<TableAppendableSpec[]>([
+    { key: '1', engine: 'vLLM 0.8.10', accelerator: 'NVIDIA RTX PRO 5000', cpu: 32, memory: 256 },
+  ]);
+
+  const updateRow = (key: string, patch: Partial<TableAppendableSpec>) => {
+    setRows((items) => items.map((item) => (item.key === key ? { ...item, ...patch } : item)));
+  };
+
+  const columns: TableProps<TableAppendableSpec>['columns'] = [
+    { title: '序号', width: 64, render: (_value, _record, index) => index + 1 },
+    {
+      title: '推理引擎',
+      dataIndex: 'engine',
+      width: 160,
+      render: (value, row) => (
+        <Select
+          value={value}
+          options={[{ value: 'vLLM 0.8.10' }, { value: 'MindIE 2.0' }]}
+          onChange={(engine) => updateRow(row.key, { engine })}
+        />
+      ),
+    },
+    {
+      title: '加速卡',
+      dataIndex: 'accelerator',
+      width: 200,
+      render: (value, row) => (
+        <Select
+          value={value}
+          options={[{ value: 'NVIDIA RTX PRO 5000' }, { value: 'Ascend 910B' }]}
+          onChange={(accelerator) => updateRow(row.key, { accelerator })}
+        />
+      ),
+    },
+    {
+      title: 'CPU（核）',
+      dataIndex: 'cpu',
+      width: 120,
+      render: (value, row) => (
+        <InputNumber min={1} value={value} onChange={(cpu) => updateRow(row.key, { cpu: cpu ?? 1 })} />
+      ),
+    },
+    {
+      title: '内存（GiB）',
+      dataIndex: 'memory',
+      width: 130,
+      render: (value, row) => (
+        <InputNumber min={1} value={value} onChange={(memory) => updateRow(row.key, { memory: memory ?? 1 })} />
+      ),
+    },
+    {
+      title: '操作',
+      key: 'action',
+      width: 64,
+      fixed: 'right',
+      render: (_value, row) => (
+        rows.length > 1 ? (
+          <AppendableRemoveButton
+            label="删除资源规格"
+            onClick={() => setRows((items) => items.filter((item) => item.key !== row.key))}
+          />
+        ) : null
+      ),
+    },
+  ];
+
+  return (
+    <div className="table-appendable-demo">
+      <Table<TableAppendableSpec>
+        rowKey="key"
+        size="small"
+        columns={columns}
+        dataSource={rows}
+        pagination={false}
+        scroll={{ x: 760 }}
+      />
+      <div className="appendable-footer">
+        <Button
+          className="appendable-add"
+          icon={<PlusOutlined />}
+          type="link"
+          onClick={() => setRows((items) => [...items, {
+            key: String(Math.max(...items.map((item) => Number(item.key))) + 1),
+            engine: 'vLLM 0.8.10',
+            accelerator: 'NVIDIA RTX PRO 5000',
+            cpu: 32,
+            memory: 256,
+          }])}
+        >
+          添加资源规格
+        </Button>
+        <Typography.Text type="secondary">多列强结构才使用表格追加</Typography.Text>
+      </div>
+    </div>
   );
 }
 
@@ -238,6 +678,52 @@ export function ComponentLibraryPage() {
             </Space>
           </ComponentTile>
         </div>
+      </section>
+
+      <section className="surface kit-section">
+        <div className="section-head">
+          <Typography.Title level={4}>普通追加表单组</Typography.Title>
+          <Tag>Form / Select / Input / Button</Tag>
+        </div>
+        <div className="appendable-showcase-grid">
+          <ComponentTile name="添加权限" type="Modal">
+            <PermissionAppendableDemo />
+          </ComponentTile>
+          <ComponentTile name="添加组件" type="Homepage">
+            <ComponentAppendableDemo />
+          </ComponentTile>
+          <ComponentTile name="添加地址" type="Form">
+            <ListAppendableDemo />
+          </ComponentTile>
+          <ComponentTile name="添加条件" type="Page">
+            <ConditionAppendableDemo />
+          </ComponentTile>
+        </div>
+      </section>
+
+      <section className="surface kit-section">
+        <div className="section-head">
+          <Typography.Title level={4}>开关展开组</Typography.Title>
+          <Tag>Switch / List / Input</Tag>
+        </div>
+        <div className="switch-panel-showcase-grid">
+          <ComponentTile name="底色展开" type="Form">
+            <SwitchPanelDemo />
+          </ComponentTile>
+          <ComponentTile name="多字段展开" type="Page">
+            <SwitchPanelWideDemo />
+          </ComponentTile>
+        </div>
+      </section>
+
+      <section className="surface kit-section">
+        <div className="section-head">
+          <Typography.Title level={4}>表格追加组</Typography.Title>
+          <Tag>Table / Select / InputNumber</Tag>
+        </div>
+        <ComponentTile name="资源规格" type="Table">
+          <TableAppendableDemo />
+        </ComponentTile>
       </section>
 
       <section className="surface kit-section">

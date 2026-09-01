@@ -295,28 +295,31 @@ export function OnlineServicePage() {
             </Space>
             {multiEndpoint ? (
               <div className="endpoint-panel">
-                <div className="endpoint-table-head">
-                  <span>服务端口号</span>
-                  <span>API</span>
-                  <span>操作</span>
-                </div>
                 {endpoints.map((item, index) => (
-                  <div className="endpoint-row" key={item.id}>
-                    <InputNumber min={1} max={65535} value={item.port} onChange={(value) => setEndpoints((items) => items.map((next) => next.id === item.id ? { ...next, port: value ?? undefined } : next))} />
-                    <Input value={item.api} onChange={(event) => setEndpoints((items) => items.map((next) => next.id === item.id ? { ...next, api: event.target.value } : next))} />
-                    <Space size={8}>
-                      <Switch size="small" checked={item.enabled} onChange={(value) => setEndpoints((items) => items.map((next) => next.id === item.id ? { ...next, enabled: value } : next))} />
-                      <Tooltip title={endpoints.length === 1 ? '至少保留一组服务' : '删除此服务组'}>
-                        <Button
-                          aria-label={`删除服务组 ${index + 1}`}
-                          type="text"
-                          danger
-                          icon={<DeleteOutlined />}
-                          disabled={endpoints.length === 1}
-                          onClick={() => setEndpoints((items) => items.filter((next) => next.id !== item.id))}
-                        />
-                      </Tooltip>
-                    </Space>
+                  <div className={`endpoint-row${index > 0 ? ' is-unlabeled' : ''}`} key={item.id}>
+                    <Form.Item label={index === 0 ? '服务端口号' : undefined}>
+                      <InputNumber min={1} max={65535} value={item.port} onChange={(value) => setEndpoints((items) => items.map((next) => next.id === item.id ? { ...next, port: value ?? undefined } : next))} />
+                    </Form.Item>
+                    <Form.Item label={index === 0 ? 'API' : undefined}>
+                      <Input value={item.api} onChange={(event) => setEndpoints((items) => items.map((next) => next.id === item.id ? { ...next, api: event.target.value } : next))} />
+                    </Form.Item>
+                    <div className="endpoint-operation">
+                      {index === 0 && <Typography.Text className="endpoint-operation-label">操作</Typography.Text>}
+                      <div className="endpoint-operation-controls">
+                        <Switch size="small" checked={item.enabled} onChange={(value) => setEndpoints((items) => items.map((next) => next.id === item.id ? { ...next, enabled: value } : next))} />
+                        {endpoints.length > 1 && (
+                          <Tooltip title="删除此服务组">
+                            <Button
+                              aria-label={`删除服务组 ${index + 1}`}
+                              type="text"
+                              danger
+                              icon={<DeleteOutlined />}
+                              onClick={() => setEndpoints((items) => items.filter((next) => next.id !== item.id))}
+                            />
+                          </Tooltip>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 ))}
                 <Space className="endpoint-add" size={4}>
