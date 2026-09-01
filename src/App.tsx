@@ -12,6 +12,8 @@ import { PlaceholderPage } from './pages/PlaceholderPage';
 import { DataVisualizationPage } from './pages/DataVisualizationPage';
 import { CustomHomePage } from './pages/CustomHomePage';
 import { DetailPage } from './pages/DetailPage';
+import { ModalDrawerPage } from './pages/ModalDrawerPage';
+import { TreeTablePage } from './pages/TreeTablePage';
 
 const pageTitles: Record<string, string> = {
   os: '操作系统',
@@ -25,6 +27,8 @@ const pageTitles: Record<string, string> = {
   'secondary-page': '二级页面',
   'custom-home': '自定义首页',
   'detail-page': '详情页',
+  'modal-drawer': '弹窗与抽屉',
+  'tree-table': '左树右表',
   'card-choice': '卡片选择',
   'normal-table': '普通表格',
   'complex-table': '复杂表格',
@@ -53,6 +57,8 @@ export default function App() {
     if (activePrimary === 'kit' && activeSecondary === 'secondary-page') return <OnlineServicePage />;
     if (activePrimary === 'kit' && activeSecondary === 'custom-home') return <CustomHomePage />;
     if (activePrimary === 'kit' && activeSecondary === 'detail-page') return <DetailPage />;
+    if (activePrimary === 'kit' && activeSecondary === 'modal-drawer') return <ModalDrawerPage />;
+    if (activePrimary === 'kit' && activeSecondary === 'tree-table') return <TreeTablePage />;
     if (activePrimary === 'kit' && activeSecondary === 'card-choice') return <CardChoicePage />;
     if (activePrimary === 'kit' && activeSecondary === 'normal-table') {
       return <AuditLogPage title="普通表格" showRetention={false} queryMode="simple" />;

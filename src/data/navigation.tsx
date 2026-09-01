@@ -1,5 +1,6 @@
 import {
   ApiOutlined,
+  ApartmentOutlined,
   AppstoreOutlined,
   BellOutlined,
   CloudServerOutlined,
@@ -194,6 +195,8 @@ export const navigation: Record<PrimaryKey, NavItem[]> = {
     { key: 'data-visualization', label: '数据可视化（更新中）', icon: <BarChartOutlined /> },
     { key: 'custom-home', label: '自定义首页（更新中）', icon: <LayoutOutlined /> },
     { key: 'detail-page', label: '详情页（更新中）', icon: <ProfileOutlined /> },
+    { key: 'modal-drawer', label: '弹窗与抽屉（更新中）', icon: <LayoutOutlined /> },
+    { key: 'tree-table', label: '左树右表（更新中）', icon: <ApartmentOutlined /> },
     { key: 'component-library', label: '组件 DemoKit', icon: <AppstoreOutlined /> },
   ],
 };
