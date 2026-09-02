@@ -197,6 +197,7 @@ export const navigation: Record<PrimaryKey, NavItem[]> = {
     { key: 'detail-page', label: '详情页（更新中）', icon: <ProfileOutlined /> },
     { key: 'modal-drawer', label: '弹窗与抽屉（更新中）', icon: <LayoutOutlined /> },
     { key: 'tree-table', label: '左树右表（更新中）', icon: <ApartmentOutlined /> },
+    { key: 'graphic-table', label: '图形化表格（更新中）', icon: <BarChartOutlined /> },
     { key: 'component-library', label: '组件 DemoKit', icon: <AppstoreOutlined /> },
   ],
 };

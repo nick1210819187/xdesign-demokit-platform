@@ -15,6 +15,7 @@ import {
   BgColorsOutlined,
   CustomerServiceOutlined,
   DownOutlined,
+  EditOutlined,
   InfoCircleOutlined,
   LinkOutlined,
   MenuFoldOutlined,
@@ -61,6 +62,8 @@ type AppShellProps = {
   activePrimary: PrimaryKey;
   activeSecondary: string;
   children: ReactNode;
+  hideSecondaryNav?: boolean;
+  onEditHome: () => void;
   onNavigate: (primary: PrimaryKey, secondary: string) => void;
 };
 
@@ -164,7 +167,7 @@ function SecondaryNav({
   );
 }
 
-export function AppShell({ activePrimary, activeSecondary, children, onNavigate }: AppShellProps) {
+export function AppShell({ activePrimary, activeSecondary, children, hideSecondaryNav = false, onEditHome, onNavigate }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [navTheme, setNavTheme] = useState<NavTheme>(() => window.localStorage.getItem('xdesign-nav-theme') === 'dark' ? 'dark' : 'light');
   const [themeDraft, setThemeDraft] = useState<NavTheme>(navTheme);
@@ -217,13 +220,16 @@ export function AppShell({ activePrimary, activeSecondary, children, onNavigate 
   }, [flyoutOpen, flyoutAnchor, flyoutPrimary]);
 
   return (
-    <div className={`app-shell nav-theme-${navTheme}${collapsed ? ' nav-collapsed' : ''}${activePrimary === 'home' ? ' home-preview-shell' : ''}`}>
+    <div className={`app-shell nav-theme-${navTheme}${collapsed ? ' nav-collapsed' : ''}${hideSecondaryNav ? ' secondary-hidden' : ''}${activePrimary === 'home' ? ' home-preview-shell' : ''}`}>
       <header className="topbar">
         <div className="brand-lockup" aria-label="FusionOne Center">
           <img className="brand-mark" src={assetPath('/assets/topbar/fusionone-mark.png')} alt="" draggable={false} />
           <img className="brand-wordmark" src={assetPath('/assets/topbar/fusionone-wordmark.svg')} alt="FusionOne Center" draggable={false} />
         </div>
         <div className="top-actions">
+          <Tooltip title="编辑首页">
+            <Button type="text" icon={<EditOutlined />} aria-label="编辑首页" onClick={onEditHome} />
+          </Tooltip>
           <Tooltip title="界面主题">
             <Button
               type="text"
@@ -294,12 +300,14 @@ export function AppShell({ activePrimary, activeSecondary, children, onNavigate 
           </div>
         </aside>
 
-        <SecondaryNav
-          activePrimary={activePrimary}
-          activeSecondary={activeSecondary}
-          collapsed={collapsed}
-          onNavigate={(secondary) => onNavigate(activePrimary, secondary)}
-        />
+        {!hideSecondaryNav ? (
+          <SecondaryNav
+            activePrimary={activePrimary}
+            activeSecondary={activeSecondary}
+            collapsed={collapsed}
+            onNavigate={(secondary) => onNavigate(activePrimary, secondary)}
+          />
+        ) : null}
 
         {collapsed && flyoutOpen ? (
           <SecondaryNav

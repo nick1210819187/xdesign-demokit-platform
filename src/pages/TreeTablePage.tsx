@@ -266,8 +266,8 @@ export function TreeTablePage() {
           <div className="resource-tree-filter">
             <Typography.Text strong>资源类型</Typography.Text>
             <div className="resource-tree-switch">
-              <Switch size="small" checked={onlyWithResources} onChange={setOnlyWithResources} />
               <Typography.Text type="secondary">仅显示有资源</Typography.Text>
+              <Switch size="small" checked={onlyWithResources} onChange={setOnlyWithResources} />
             </div>
           </div>
           <Input

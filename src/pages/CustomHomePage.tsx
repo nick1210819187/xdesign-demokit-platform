@@ -346,9 +346,6 @@ function LibraryCard({ widget, added }: { widget: WidgetDefinition; added: boole
         )}
       </div>
       <Typography.Paragraph ellipsis={{ rows: 2 }}>{widget.description}</Typography.Paragraph>
-      <div className={`component-size-sketch span-${widget.defaultSpan}`} aria-hidden="true">
-        {Array.from({ length: widget.defaultSpan }, (_, index) => <i key={index} />)}
-      </div>
     </Card>
   );
 }
@@ -446,7 +443,11 @@ function CanvasWidget({
   );
 }
 
-export function CustomHomePage() {
+type CustomHomePageProps = {
+  onExit?: () => void;
+};
+
+export function CustomHomePage({ onExit }: CustomHomePageProps) {
   const { modal, message } = App.useApp();
   const [layout, setLayout] = useState<LayoutItem[]>(defaultLayout);
   const [rowCount, setRowCount] = useState(DEFAULT_GRID_ROWS);
@@ -578,6 +579,25 @@ export function CustomHomePage() {
     });
   };
 
+  const confirmCancelAndExit = () => {
+    if (!onExit) {
+      cancelChanges();
+      return;
+    }
+    modal.confirm({
+      title: '取消编辑首页？',
+      content: '确认取消后将退出当前编辑页面，并返回首页。',
+      okText: '确认取消',
+      cancelText: '继续编辑',
+      onOk: () => {
+        setLayout(defaultLayout.map((item) => ({ ...item })));
+        setRowCount(DEFAULT_GRID_ROWS);
+        setDirty(false);
+        onExit();
+      },
+    });
+  };
+
   const saveLayout = () => {
     setDirty(false);
     message.success('首页配置已保存');
@@ -609,7 +629,9 @@ export function CustomHomePage() {
         <header className="custom-home-heading">
           <div>
             <Space size={10} align="center">
-              <Button type="text" icon={<ArrowLeftOutlined />} aria-label="返回" />
+              <Tooltip title="退出编辑">
+                <Button type="text" icon={<ArrowLeftOutlined />} aria-label="退出编辑" onClick={onExit} />
+              </Tooltip>
               <Typography.Title level={3}>编辑首页</Typography.Title>
               <Tag color="blue">当前角色：运营管理员</Tag>
               {dirty ? <Badge status="warning" text="有未保存修改" /> : null}
@@ -617,7 +639,7 @@ export function CustomHomePage() {
           </div>
           <Space size={8}>
             <Button icon={<ReloadOutlined />} onClick={restoreDefault}>恢复默认</Button>
-            <Button onClick={cancelChanges}>取消</Button>
+            <Button onClick={confirmCancelAndExit}>取消</Button>
             <Button type="primary" icon={<SaveOutlined />} onClick={saveLayout}>保存</Button>
           </Space>
         </header>

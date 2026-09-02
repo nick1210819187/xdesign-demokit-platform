@@ -590,6 +590,11 @@ input {
   margin-inline: 0;
 }
 
+.workspace-inner:has(.graphic-table-page) {
+  max-width: none;
+  margin-inline: 0;
+}
+
 .tree-table-page {
   min-height: calc(100dvh - 92px);
 }
@@ -702,6 +707,388 @@ input {
   .resource-table-toolbar {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+.graphic-table-page {
+  min-height: calc(100dvh - 92px);
+}
+
+.graphic-page-heading {
+  align-items: center;
+}
+
+.graphic-page-tools {
+  flex: 0 0 auto;
+}
+
+.graphic-tool-button.ant-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: var(--text-2);
+  border: 1px solid var(--divider);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.graphic-tool-button.ant-btn:hover,
+.graphic-tool-button.ant-btn:focus-visible {
+  color: var(--content-primary);
+  border-color: var(--content-primary-border);
+  background: var(--content-primary-subtle);
+}
+
+.graphic-table-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 640px;
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.gpu-summary-panel {
+  padding: 20px 24px;
+}
+
+.gpu-summary-panel h4.ant-typography {
+  margin: 0 0 16px;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.gpu-summary-content {
+  display: grid;
+  grid-template-columns: 144px 132px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+}
+
+.gpu-utilization-card {
+  display: grid;
+  justify-items: center;
+  gap: 0;
+}
+
+.gpu-gauge {
+  width: 152px;
+  height: 100px;
+}
+
+.gpu-gauge-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.gpu-gauge-trail,
+.gpu-gauge-main,
+.gpu-gauge-error {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 12;
+}
+
+.gpu-gauge-trail {
+  stroke: #dce8ff;
+}
+
+.gpu-gauge-main {
+  stroke: var(--content-primary);
+  stroke-dasharray: 88 100;
+  stroke-dashoffset: 0;
+}
+
+.gpu-gauge-error {
+  stroke: var(--brand);
+  stroke-dasharray: 12 100;
+  stroke-dashoffset: -84;
+}
+
+.gpu-gauge-number {
+  fill: var(--text-1);
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.gpu-gauge-number tspan {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.gpu-gauge-caption {
+  fill: var(--text-1);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.gpu-overview-legend {
+  width: max-content;
+  display: grid;
+  gap: 4px;
+}
+
+.gpu-overview-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-2);
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.gpu-overview-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.gpu-overview-legend b {
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.gpu-overview-legend small {
+  margin-left: 2px;
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.gpu-overview-legend .is-used {
+  background: var(--content-primary);
+}
+
+.gpu-overview-legend .is-available {
+  background: #5B8FF9;
+}
+
+.gpu-overview-legend .is-error {
+  background: var(--brand);
+}
+
+.gpu-overview-legend .is-total {
+  background: rgba(0, 11, 35, 0.18);
+}
+
+.gpu-metric-strip {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(120px, 1fr));
+}
+
+.gpu-metric-item {
+  min-width: 0;
+  display: grid;
+  align-content: center;
+  min-height: 72px;
+  padding: 0 24px;
+  border-left: 1px solid var(--divider);
+}
+
+.gpu-metric-item .ant-statistic .ant-statistic-title {
+  min-height: 0;
+  margin-bottom: 12px;
+  color: var(--text-1) !important;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.gpu-metric-item .ant-statistic-content {
+  color: var(--text-1);
+  font-size: 22px;
+  line-height: 30px;
+  font-weight: 600;
+}
+
+.gpu-metric-item .ant-statistic-content-suffix {
+  margin-left: 2px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.gpu-table-panel {
+  min-width: 0;
+  padding: 0 0 16px;
+}
+
+.gpu-table-panel .ant-tabs-nav {
+  padding-inline: 16px;
+  margin-bottom: 16px;
+}
+
+.gpu-table-panel .ant-tabs-tab {
+  padding-block: 14px;
+}
+
+.gpu-table-panel .ant-tabs-extra-content .ant-input-affix-wrapper {
+  width: 240px;
+}
+
+.gpu-table-panel .ant-tabs-extra-content .table-toolbar-search {
+  width: 240px;
+}
+
+.gpu-table-panel .ant-table-wrapper {
+  margin-inline: 16px;
+}
+
+.gpu-table-panel .ant-table-thead > tr > th {
+  color: var(--text-1);
+  font-weight: 600;
+  background: #f7fafe;
+}
+
+.gpu-table-panel .ant-table-tbody > tr:not(.ant-table-expanded-row) > td {
+  height: 55px;
+  padding-block: 0;
+  vertical-align: middle;
+}
+
+.gpu-table-panel .ant-table-expanded-row,
+.gpu-table-panel .ant-table-expanded-row > .ant-table-cell {
+  padding: 0;
+  background: #f7fafe !important;
+}
+
+.gpu-usage-cell {
+  width: 132px;
+}
+
+.gpu-usage-cell .ant-progress {
+  width: 72px;
+  margin: 0;
+}
+
+.gpu-expanded-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  background: transparent;
+}
+
+.gpu-device-card.ant-card {
+  background: #fff;
+  border-color: var(--divider);
+  border-radius: 8px;
+  box-shadow: none !important;
+}
+
+.gpu-device-card .ant-card-body {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.gpu-device-title {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gpu-device-title .ant-typography {
+  min-width: 0;
+}
+
+.gpu-device-icon {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--content-primary);
+  background: var(--content-primary-subtle);
+}
+
+.gpu-device-descriptions .ant-descriptions-row > th,
+.gpu-device-descriptions .ant-descriptions-row > td {
+  padding-bottom: 8px;
+}
+
+.gpu-device-descriptions .ant-descriptions-item {
+  padding-inline-end: 24px;
+}
+
+.gpu-device-descriptions .ant-descriptions-item-label {
+  color: var(--text-2);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.gpu-device-descriptions .ant-descriptions-item-content {
+  color: var(--text-1);
+  font-weight: 400;
+  min-width: 0;
+}
+
+.gpu-device-descriptions .ant-typography {
+  font-weight: 400;
+}
+
+.gpu-device-section-title.ant-typography {
+  font-weight: 600;
+}
+
+.gpu-device-card .gpu-usage-cell {
+  width: 116px;
+}
+
+.gpu-device-card .gpu-usage-cell .ant-progress {
+  width: 64px;
+}
+
+.gpu-device-empty.ant-empty {
+  min-height: 72px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--divider);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.gpu-device-empty .ant-empty-image {
+  height: 32px;
+  margin-bottom: 4px;
+}
+
+.gpu-device-empty .ant-empty-description {
+  color: var(--text-3);
+}
+
+@media (max-width: 1280px) {
+  .gpu-summary-content {
+    grid-template-columns: 144px 132px minmax(0, 1fr);
+  }
+
+  .gpu-metric-strip {
+    grid-column: 1 / -1;
+  }
+
+  .gpu-expanded-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 980px) {
+  .gpu-summary-content,
+  .gpu-metric-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .gpu-utilization-card,
+  .gpu-overview-legend {
+    justify-self: start;
+  }
+
+  .gpu-metric-item {
+    padding: 12px 0 0;
+    border-top: 1px solid var(--divider);
+    border-left: 0;
   }
 }
 
@@ -3512,26 +3899,6 @@ body.is-resizing-table-column {
 .component-library-card .ant-tag {
   margin: 0;
 }
-
-.component-size-sketch {
-  height: 8px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2px;
-  margin-top: 8px;
-}
-
-.component-size-sketch i {
-  display: block;
-  border-radius: 2px;
-  background: var(--content-primary-border);
-}
-
-.component-size-sketch.span-1 i { grid-column: span 4; width: 25%; }
-.component-size-sketch.span-2 i { grid-column: span 2; }
-.component-size-sketch.span-3 i { grid-column: span 1; }
-.component-size-sketch.span-3 i:last-child { grid-column: span 2; }
-.component-size-sketch.span-4 i { grid-column: span 1; }
 
 .homepage-canvas-panel {
   min-width: 0;

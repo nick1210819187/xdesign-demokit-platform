@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { App as AntApp } from 'antd';
 import { AppShell } from './components/AppShell';
 import { firstSelectable, navigation, type PrimaryKey } from './data/navigation';
@@ -12,6 +12,7 @@ import { PlaceholderPage } from './pages/PlaceholderPage';
 import { DataVisualizationPage } from './pages/DataVisualizationPage';
 import { CustomHomePage } from './pages/CustomHomePage';
 import { DetailPage } from './pages/DetailPage';
+import { GraphicTablePage } from './pages/GraphicTablePage';
 import { ModalDrawerPage } from './pages/ModalDrawerPage';
 import { TreeTablePage } from './pages/TreeTablePage';
 
@@ -29,6 +30,7 @@ const pageTitles: Record<string, string> = {
   'detail-page': '详情页',
   'modal-drawer': '弹窗与抽屉',
   'tree-table': '左树右表',
+  'graphic-table': '图形化表格',
   'card-choice': '卡片选择',
   'normal-table': '普通表格',
   'complex-table': '复杂表格',
@@ -39,14 +41,24 @@ const pageTitles: Record<string, string> = {
 const resolveRoute = () => {
   const [rawPrimary, rawSecondary] = window.location.hash.replace(/^#\/?/, '').split('/');
   const primary = Object.prototype.hasOwnProperty.call(navigation, rawPrimary) ? rawPrimary as PrimaryKey : 'ops';
-  const secondary = rawSecondary || firstSelectable(navigation[primary]) || 'audit-log';
-  return { primary, secondary };
+  const [secondaryValue, rawQuery = ''] = (rawSecondary || '').split('?');
+  const secondary = secondaryValue || firstSelectable(navigation[primary]) || 'audit-log';
+  const params = new URLSearchParams(rawQuery);
+  return { primary, secondary, hideSecondaryNav: params.get('focus') === 'home-edit' && primary === 'kit' && secondary === 'custom-home' };
 };
 
 export default function App() {
   const initialRoute = resolveRoute();
   const [activePrimary, setActivePrimary] = useState<PrimaryKey>(initialRoute.primary);
   const [activeSecondary, setActiveSecondary] = useState(initialRoute.secondary);
+  const [hideSecondaryNav, setHideSecondaryNav] = useState(initialRoute.hideSecondaryNav);
+
+  const handleGoHome = useCallback(() => {
+    setActivePrimary('home');
+    setActiveSecondary('');
+    setHideSecondaryNav(false);
+    window.history.replaceState(null, '', '#home/');
+  }, []);
 
   const page = useMemo(() => {
     if (activePrimary === 'home') {
@@ -55,10 +67,11 @@ export default function App() {
     if (activePrimary === 'ops' && activeSecondary === 'audit-log') return <AuditLogPage />;
     if (activePrimary === 'kit' && activeSecondary === 'component-library') return <ComponentLibraryPage />;
     if (activePrimary === 'kit' && activeSecondary === 'secondary-page') return <OnlineServicePage />;
-    if (activePrimary === 'kit' && activeSecondary === 'custom-home') return <CustomHomePage />;
+    if (activePrimary === 'kit' && activeSecondary === 'custom-home') return <CustomHomePage onExit={handleGoHome} />;
     if (activePrimary === 'kit' && activeSecondary === 'detail-page') return <DetailPage />;
     if (activePrimary === 'kit' && activeSecondary === 'modal-drawer') return <ModalDrawerPage />;
     if (activePrimary === 'kit' && activeSecondary === 'tree-table') return <TreeTablePage />;
+    if (activePrimary === 'kit' && activeSecondary === 'graphic-table') return <GraphicTablePage />;
     if (activePrimary === 'kit' && activeSecondary === 'card-choice') return <CardChoicePage />;
     if (activePrimary === 'kit' && activeSecondary === 'normal-table') {
       return <AuditLogPage title="普通表格" showRetention={false} queryMode="simple" />;
@@ -69,18 +82,32 @@ export default function App() {
     if (activePrimary === 'kit' && activeSecondary === 'filter-card') return <ModelGalleryPage />;
     if (activePrimary === 'kit' && activeSecondary === 'data-visualization') return <DataVisualizationPage />;
     return <PlaceholderPage title={pageTitles[activeSecondary] || activeSecondary || '模块'} />;
-  }, [activePrimary, activeSecondary]);
+  }, [activePrimary, activeSecondary, handleGoHome]);
 
   const handleNavigate = (primary: PrimaryKey, secondary: string) => {
     const nextSecondary = secondary || firstSelectable(navigation[primary]);
     setActivePrimary(primary);
     setActiveSecondary(nextSecondary);
+    setHideSecondaryNav(false);
     window.history.replaceState(null, '', `#${primary}/${nextSecondary}`);
+  };
+
+  const handleEditHome = () => {
+    setActivePrimary('kit');
+    setActiveSecondary('custom-home');
+    setHideSecondaryNav(true);
+    window.history.replaceState(null, '', '#kit/custom-home?focus=home-edit');
   };
 
   return (
     <AntApp>
-      <AppShell activePrimary={activePrimary} activeSecondary={activeSecondary} onNavigate={handleNavigate}>
+      <AppShell
+        activePrimary={activePrimary}
+        activeSecondary={activeSecondary}
+        hideSecondaryNav={hideSecondaryNav}
+        onEditHome={handleEditHome}
+        onNavigate={handleNavigate}
+      >
         {page}
       </AppShell>
     </AntApp>
