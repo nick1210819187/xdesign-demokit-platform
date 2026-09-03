@@ -7,8 +7,9 @@ import {
   SearchOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
-import { App, Button, Card, Descriptions, Empty, Input, Progress, Space, Statistic, Table, Tabs, Tag, Tooltip, Typography } from 'antd';
+import { App, Button, Card, Descriptions, Empty, Input, Progress, Space, Statistic, Table, Tabs, Tooltip, Typography } from 'antd';
 import type { DescriptionsProps, TableColumnsType } from 'antd';
+import { StatusBadge } from '../components/StatusBadge';
 
 type GpuNode = {
   key: string;
@@ -239,7 +240,7 @@ export function GraphicTablePage() {
       dataIndex: 'status',
       key: 'status',
       width: 110,
-      render: (status: GpuNode['status']) => <Tag color={status === '已启动' ? 'success' : 'warning'}>{status}</Tag>,
+      render: (status: GpuNode['status']) => <StatusBadge status={status === '已启动' ? 'success' : 'warning'} text={status} />,
     },
     { title: '名称', dataIndex: 'name', key: 'name', width: 120, sorter: (a, b) => a.name.localeCompare(b.name) },
     { title: 'GPU数量', dataIndex: 'gpuCount', key: 'gpuCount', width: 120 },

@@ -13,7 +13,6 @@ import {
   Empty,
   Form,
   Input,
-  InputNumber,
   Popconfirm,
   Radio,
   Select,
@@ -36,6 +35,7 @@ import {
   RocketOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
+import { SpinnerNumberInput } from '../components/NumericInput';
 
 type ModelStatus = 'New' | '推荐' | '内测' | '已部署';
 
@@ -616,7 +616,7 @@ export function ModelGalleryPage() {
           </Form.List>
           <Form.Item label="数据集参数" className="model-form-subsection">
             <Form.Item name="maxSamples" label="最大评测数据量">
-              <InputNumber min={1} max={10000} />
+              <SpinnerNumberInput min={1} max={10000} />
             </Form.Item>
             <Button type="link" onClick={() => setDatasetExtraOpen((value) => !value)}>
               其他参数 <DownOutlined rotate={datasetExtraOpen ? 180 : 0} />
@@ -642,7 +642,7 @@ export function ModelGalleryPage() {
                 name={name}
                 label={<span>{label} <Tooltip title="可通过加减按钮或直接输入调整参数"><InfoCircleOutlined /></Tooltip></span>}
               >
-                <InputNumber defaultValue={Number(defaultValue)} step={Number(step)} min={0} />
+                <SpinnerNumberInput defaultValue={Number(defaultValue)} step={Number(step)} min={0} />
               </Form.Item>
             ))}
           </div>
@@ -706,10 +706,10 @@ export function ModelGalleryPage() {
               <Select options={[{ value: 'NVIDIA H800' }, { value: 'NVIDIA H20' }, { value: 'Ascend 910B' }]} />
             </Form.Item>
             <Form.Item name="gpuCount" label="GPU 数量" rules={[{ required: true }]}>
-              <InputNumber min={1} max={16} />
+              <SpinnerNumberInput min={1} max={16} />
             </Form.Item>
             <Form.Item name="replicas" label="实例数量" rules={[{ required: true }]}>
-              <InputNumber min={1} max={20} />
+              <SpinnerNumberInput min={1} max={20} />
             </Form.Item>
             <Form.Item name="quota" label="显存配额">
               <Select options={[{ value: '80GB' }, { value: '160GB' }, { value: '320GB' }]} />

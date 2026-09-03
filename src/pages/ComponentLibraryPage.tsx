@@ -15,7 +15,6 @@ import {
   Empty,
   Form,
   Input,
-  InputNumber,
   Modal,
   Pagination,
   Popconfirm,
@@ -47,6 +46,8 @@ import type { TableProps, TimeRangePickerProps, TransferProps, UploadProps } fro
 import { CloudUploadOutlined, DeleteOutlined, MoreOutlined, PlusOutlined, SettingOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
+import { FixedUnitNumberInput, SelectUnitNumberInput, SpinnerNumberInput } from '../components/NumericInput';
+import { StatusBadge } from '../components/StatusBadge';
 
 const { RangePicker } = DatePicker;
 
@@ -84,7 +85,7 @@ const tableColumns: TableProps<(typeof tableRows)[number]>['columns'] = [
   { title: '日志类型', dataIndex: 'type', render: (value) => <Tag>{value}</Tag> },
   { title: '操作名称', dataIndex: 'name', sorter: (a, b) => a.name.localeCompare(b.name) },
   { title: '操作用户', dataIndex: 'user' },
-  { title: '操作结果', dataIndex: 'result', render: (value) => <Badge status={value === '成功' ? 'success' : value === '失败' ? 'error' : 'processing'} text={value} /> },
+  { title: '操作结果', dataIndex: 'result', render: (value) => <StatusBadge status={value === '成功' ? 'success' : value === '失败' ? 'error' : 'processing'} text={value} /> },
   { title: '发生时间', dataIndex: 'time' },
   { title: '操作', render: () => <Button type="link" size="small">详情</Button> },
 ];
@@ -213,7 +214,7 @@ function ConditionAppendableDemo() {
                   />
                 </Form.Item>
                 <Form.Item label={index === 0 ? '阈值' : undefined}>
-                  <InputNumber min={0} max={100} defaultValue={80} addonAfter="%" />
+                  <FixedUnitNumberInput min={0} max={100} defaultValue={80} unit="%" />
                 </Form.Item>
               </div>
               {hasActionColumn && (
@@ -256,7 +257,7 @@ function SwitchPanelDemo() {
             {rows.map((row, index) => (
               <div className={`switch-endpoint-row${index > 0 ? ' is-unlabeled' : ''}`} key={row.id}>
                 <Form.Item label={index === 0 ? '服务端口号' : undefined}>
-                  <InputNumber min={1} max={65535} defaultValue={18000 + index} />
+                  <SpinnerNumberInput min={1} max={65535} defaultValue={18000 + index} />
                 </Form.Item>
                 <Form.Item label={index === 0 ? 'API' : undefined}>
                   <Input defaultValue="/v1/chat/completions" />
@@ -309,13 +310,13 @@ function SwitchPanelWideDemo() {
         <div className="switch-dependent-panel">
           <div className="switch-panel-grid">
             <Form.Item label="CPU 上限">
-              <InputNumber min={1} max={100} defaultValue={80} addonAfter="%" />
+              <FixedUnitNumberInput min={1} max={100} defaultValue={80} unit="%" />
             </Form.Item>
             <Form.Item label="内存上限">
-              <InputNumber min={1} max={100} defaultValue={70} addonAfter="%" />
+              <FixedUnitNumberInput min={1} max={100} defaultValue={70} unit="%" />
             </Form.Item>
             <Form.Item label="持续时间">
-              <InputNumber min={1} max={24} defaultValue={2} addonAfter="小时" />
+              <FixedUnitNumberInput min={1} max={24} defaultValue={2} unit="小时" />
             </Form.Item>
           </div>
         </div>
@@ -372,7 +373,7 @@ function TableAppendableDemo() {
       dataIndex: 'cpu',
       width: 120,
       render: (value, row) => (
-        <InputNumber min={1} value={value} onChange={(cpu) => updateRow(row.key, { cpu: cpu ?? 1 })} />
+        <SpinnerNumberInput min={1} value={value} style={{ width: 112 }} onChange={(cpu) => updateRow(row.key, { cpu: cpu ?? 1 })} />
       ),
     },
     {
@@ -380,7 +381,7 @@ function TableAppendableDemo() {
       dataIndex: 'memory',
       width: 130,
       render: (value, row) => (
-        <InputNumber min={1} value={value} onChange={(memory) => updateRow(row.key, { memory: memory ?? 1 })} />
+        <SpinnerNumberInput min={1} value={value} style={{ width: 120 }} onChange={(memory) => updateRow(row.key, { memory: memory ?? 1 })} />
       ),
     },
     {
@@ -538,7 +539,8 @@ export function ComponentLibraryPage() {
           <ComponentTile name="基础录入" type="Input">
             <Space orientation="vertical">
               <Input placeholder="请输入名称" />
-              <Space.Compact><InputNumber min={1} max={30} defaultValue={7} /><Button disabled>天</Button></Space.Compact>
+              <FixedUnitNumberInput min={1} max={30} defaultValue={7} unit="天" />
+              <SelectUnitNumberInput min={1} max={1024} defaultValue={512} />
               <TimePicker />
             </Space>
           </ComponentTile>
@@ -616,6 +618,15 @@ export function ComponentLibraryPage() {
               <Badge count={3}><Avatar>AD</Avatar></Badge>
             </Space>
           </ComponentTile>
+          <ComponentTile name="状态" type="Badge">
+            <Space wrap size={16}>
+              <StatusBadge status="success" text="成功" />
+              <StatusBadge status="error" text="失败" />
+              <StatusBadge status="processing" text="进行中" />
+              <StatusBadge status="warning" text="维护中" />
+              <StatusBadge status="default" text="未启动" />
+            </Space>
+          </ComponentTile>
           <ComponentTile name="Tabs / Breadcrumb" type="导航">
             <Space orientation="vertical" className="full">
               <Breadcrumb items={[{ title: '运维' }, { title: '日志' }, { title: '审计日志' }]} />
@@ -640,12 +651,12 @@ export function ComponentLibraryPage() {
 
       <Modal title="Modal 对话框" open={modalOpen} onCancel={() => setModalOpen(false)} onOk={() => setModalOpen(false)}>
         <Form layout="vertical">
-          <Form.Item label="保存周期"><Space.Compact><InputNumber min={1} max={365} defaultValue={30} /><Button disabled>天</Button></Space.Compact></Form.Item>
+          <Form.Item label="保存周期"><FixedUnitNumberInput min={1} max={365} defaultValue={30} unit="天" /></Form.Item>
           <Form.Item label="备注"><Input.TextArea rows={3} /></Form.Item>
         </Form>
       </Modal>
       <Drawer title="Drawer 抽屉" open={drawerOpen} onClose={() => setDrawerOpen(false)} size="default">
-        <Descriptions column={1} items={[{ key: '1', label: '操作用户', children: 'Administrator' }, { key: '2', label: '操作结果', children: <Badge status="success" text="成功" /> }]} />
+        <Descriptions column={1} items={[{ key: '1', label: '操作用户', children: 'Administrator' }, { key: '2', label: '操作结果', children: <StatusBadge status="success" text="成功" /> }]} />
       </Drawer>
     </div>
   );

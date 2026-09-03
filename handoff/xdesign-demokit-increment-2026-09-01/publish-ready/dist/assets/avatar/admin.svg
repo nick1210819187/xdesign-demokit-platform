@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
+  <title id="title">Admin 用户头像</title>
+  <desc id="desc">蓝色背景中的人物头像插画</desc>
+  <defs>
+    <linearGradient id="bg" x1="12" y1="8" x2="84" y2="92" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DCEBFF"/>
+      <stop offset="1" stop-color="#8BB8F8"/>
+    </linearGradient>
+    <linearGradient id="shirt" x1="48" y1="58" x2="48" y2="99" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2F71F6"/>
+      <stop offset="1" stop-color="#1450B8"/>
+    </linearGradient>
+  </defs>
+  <rect width="96" height="96" rx="48" fill="url(#bg)"/>
+  <circle cx="78" cy="19" r="13" fill="#FFFFFF" opacity=".22"/>
+  <path d="M18 96c2-21 13-33 30-33s28 12 30 33H18Z" fill="url(#shirt)"/>
+  <path d="m38 66 10 13 10-13c-3-2-6-3-10-3s-7 1-10 3Z" fill="#F7FAFF"/>
+  <path d="M39 57h18v12c-2 4-5 6-9 6s-7-2-9-6V57Z" fill="#E7B894"/>
+  <ellipse cx="48" cy="42" rx="20" ry="24" fill="#F2C9AA"/>
+  <path d="M29 41c0-18 8-28 21-28 12 0 20 9 20 24-4-2-8-7-10-12-6 7-16 11-31 12v4Z" fill="#27364E"/>
+  <path d="M29 36c-3 1-5 4-4 8 1 5 4 7 8 6l-4-14Zm39 0c3 1 5 4 4 8-1 5-4 7-8 6l4-14Z" fill="#E7B894"/>
+  <ellipse cx="40" cy="43" rx="2" ry="2.5" fill="#26344A"/>
+  <ellipse cx="56" cy="43" rx="2" ry="2.5" fill="#26344A"/>
+  <path d="M43 53c3 2 7 2 10 0" fill="none" stroke="#B56E60" stroke-width="2" stroke-linecap="round"/>
+</svg>

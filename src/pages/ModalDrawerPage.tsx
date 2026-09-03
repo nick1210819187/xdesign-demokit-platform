@@ -31,6 +31,7 @@ import {
   QuestionCircleOutlined,
   SafetyCertificateOutlined,
 } from '@ant-design/icons';
+import { StatusBadge } from '../components/StatusBadge';
 
 type DemoItemProps = {
   title: string;
@@ -62,7 +63,7 @@ function DemoItem({ title, description, tag, source, children }: DemoItemProps) 
 
 const detailItems: DescriptionsProps['items'] = [
   { key: 'name', label: '服务名称', children: 'Qwen3-32B / V0001' },
-  { key: 'status', label: '运行状态', children: <Tag color="success">运行中</Tag> },
+  { key: 'status', label: '运行状态', children: <StatusBadge status="success" text="运行中" /> },
   { key: 'cluster', label: '所属集群', children: 'yigou_base_user_' },
   { key: 'node', label: '节点', children: 'node-gpu-01' },
   { key: 'protocol', label: '访问协议', children: 'HTTPS' },

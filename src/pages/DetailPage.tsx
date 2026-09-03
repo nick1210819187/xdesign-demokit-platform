@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
   App,
-  Badge,
   Button,
   Descriptions,
   Dropdown,
@@ -24,6 +23,7 @@ import {
   ReloadOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
+import { StatusBadge } from '../components/StatusBadge';
 
 type SwitchRow = {
   key: string;
@@ -94,7 +94,7 @@ export function DetailPage() {
 
   const descriptionItems: DescriptionsProps['items'] = [
     { key: 'host-name', label: '主机名称', children: 'mscna03' },
-    { key: 'status', label: '状态', children: <Badge status="success" text="正常" /> },
+    { key: 'status', label: '状态', children: <StatusBadge status="success" text="正常" /> },
     { key: 'description', label: '描述', children: descriptionValue },
     { key: 'os-host-name', label: 'OS主机名称', children: 'mscna03' },
     { key: 'power', label: '电源状态', children: '已上电' },

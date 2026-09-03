@@ -10,7 +10,6 @@ import {
   Descriptions,
   Form,
   Input,
-  InputNumber,
   Modal,
   Popover,
   Progress,
@@ -36,6 +35,8 @@ import {
   SearchOutlined,
   ThunderboltOutlined,
 } from '@ant-design/icons';
+import { FixedUnitNumberInput, SelectUnitNumberInput, SpinnerNumberInput } from '../components/NumericInput';
+import { StatusBadge } from '../components/StatusBadge';
 
 type ModelItem = {
   name: string;
@@ -137,7 +138,7 @@ function InferenceParametersPopover() {
           { key: 'input', label: '最大输入 Token', children: '2048' },
           { key: 'output', label: '最大输出 Token', children: '2048' },
           { key: 'batch', label: '批处理 Token 上限', children: '系统默认' },
-          { key: 'code', label: '远程代码加载', children: <Badge status="success" text="开启" /> },
+          { key: 'code', label: '远程代码加载', children: <StatusBadge status="success" text="开启" /> },
         ]}
       />
     </div>
@@ -174,12 +175,17 @@ function FieldHelp({ children, tip }: { children: string; tip?: string }) {
 }
 
 function NumberField({ value, min = 0 }: { value: number; min?: number }) {
-  return <InputNumber defaultValue={value} min={min} controls className="number-field" />;
+  return <SpinnerNumberInput defaultValue={value} min={min} className="number-field" />;
 }
 
-export function OnlineServicePage() {
+type OnlineServicePageProps = {
+  onOpenContainerCreate?: () => void;
+};
+
+export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePageProps) {
   const { message } = App.useApp();
   const [form] = Form.useForm();
+  const [acceleratorForm] = Form.useForm();
   const [current, setCurrent] = useState(0);
   const [modelOpen, setModelOpen] = useState(false);
   const [clusterOpen, setClusterOpen] = useState(false);
@@ -202,6 +208,7 @@ export function OnlineServicePage() {
   const [description, setDescription] = useState('');
   const [endpoints, setEndpoints] = useState([{ id: 1, port: 18000, api: '/v1/chat/completions', enabled: true }]);
   const [resourceSpecs, setResourceSpecs] = useState<ResourceSpec[]>([baseSpec]);
+  const [acceleratorConfigOpen, setAcceleratorConfigOpen] = useState(false);
 
   const filteredModels = useMemo(() => models.filter((item) => (
     (modelTab === 'mine' ? item.creator === 'Admin' : modelTab === 'shared' ? item.provider === '共享模型' : item.provider === '模型广场')
@@ -235,10 +242,33 @@ export function OnlineServicePage() {
     setDraftVersion(nextModel?.versions[0] ?? '');
   };
 
+  const openAcceleratorConfig = (record: ResourceSpec) => {
+    acceleratorForm.setFieldsValue({
+      accelerator: record.accelerator,
+      mode: 'eNPU',
+      compute: 1,
+      memory: 1,
+      schedule: 'density',
+      partition: 'elastic',
+    });
+    setAcceleratorConfigOpen(true);
+  };
+
   const resourceColumns: TableColumnsType<ResourceSpec> = [
     { title: '序号', width: 64, render: (_value, _record, index) => index + 1 },
     { title: '推理引擎', dataIndex: 'engine', width: 220, render: (value) => <Select defaultValue={value} options={[{ value: 'vLLM 0.8.10' }, { value: 'MindIE 2.0' }]} /> },
-    { title: '加速卡', dataIndex: 'accelerator', width: 240, render: (value) => <Space><Badge status="success" />{value}<Button type="link" size="small">配置</Button></Space> },
+    {
+      title: '加速卡',
+      dataIndex: 'accelerator',
+      width: 240,
+      render: (value, record) => (
+        <Space size={6} wrap>
+          <Badge status="success" />
+          <span>{value}</span>
+          <Button type="link" size="small" onClick={() => openAcceleratorConfig(record)}>配置</Button>
+        </Space>
+      ),
+    },
     { title: 'CPU（核）', dataIndex: 'cpu', width: 140, render: (value) => <NumberField value={value} min={1} /> },
     { title: '内存（GiB）', dataIndex: 'memory', width: 150, render: (value) => <NumberField value={value} min={1} /> },
     { title: '共享内存（GiB）', dataIndex: 'sharedMemory', width: 170, render: (value) => <NumberField value={value} /> },
@@ -277,7 +307,7 @@ export function OnlineServicePage() {
           <Radio.Group options={['HTTPS', 'HTTP']} />
         </Form.Item>
         <Form.Item name="port" label={<FieldHelp tip="服务对外提供访问的端口号。">服务端口号</FieldHelp>} initialValue={18000} rules={[{ required: true }]}>
-          <InputNumber min={1} max={65535} />
+          <SpinnerNumberInput min={1} max={65535} />
         </Form.Item>
         <Form.Item name="api" label={<FieldHelp tip="兼容 OpenAI 协议的推理接口路径。">API</FieldHelp>} initialValue="/v1/chat/completions" rules={[{ required: true }]}>
           <Input />
@@ -298,7 +328,7 @@ export function OnlineServicePage() {
                 {endpoints.map((item, index) => (
                   <div className={`endpoint-row${index > 0 ? ' is-unlabeled' : ''}`} key={item.id}>
                     <Form.Item label={index === 0 ? '服务端口号' : undefined}>
-                      <InputNumber min={1} max={65535} value={item.port} onChange={(value) => setEndpoints((items) => items.map((next) => next.id === item.id ? { ...next, port: value ?? undefined } : next))} />
+                      <SpinnerNumberInput min={1} max={65535} value={item.port} onChange={(value) => setEndpoints((items) => items.map((next) => next.id === item.id ? { ...next, port: value ?? undefined } : next))} />
                     </Form.Item>
                     <Form.Item label={index === 0 ? 'API' : undefined}>
                       <Input value={item.api} onChange={(event) => setEndpoints((items) => items.map((next) => next.id === item.id ? { ...next, api: event.target.value } : next))} />
@@ -415,6 +445,10 @@ export function OnlineServicePage() {
                 dataSource={filteredNodes}
                 pagination={false}
                 scroll={{ x: 760, y: 164 }}
+                onRow={() => ({
+                  onClick: onOpenContainerCreate,
+                })}
+                rowClassName={onOpenContainerCreate ? 'clickable-table-row' : ''}
                 columns={[
                   { title: '节点名称', dataIndex: 'name', width: 140 },
                   { title: 'CPU（可用 / 总量）', dataIndex: 'cpu', width: 190 },
@@ -429,7 +463,7 @@ export function OnlineServicePage() {
           <Select allowClear placeholder="请选择部署节点（可选）" options={nodes.map((item) => ({ value: item.key, label: item.name }))} />
         </Form.Item>
         <Form.Item label="实例数量">
-          <InputNumber min={1} defaultValue={1} />
+          <SpinnerNumberInput min={1} defaultValue={1} />
         </Form.Item>
       </section>
 
@@ -516,7 +550,7 @@ export function OnlineServicePage() {
         <Descriptions colon={false} column={4} items={[
           { key: 'name', label: '服务名称', children: form.getFieldValue('serviceName') || 'Qwen3-32B 在线服务' },
           { key: 'model', label: '模型选择', children: `${selectedModel} / ${selectedVersion}` },
-          { key: 'local', label: '模型本地加速', children: <Badge status="success" text="启用" /> },
+          { key: 'local', label: '模型本地加速', children: <StatusBadge status="success" text="启用" /> },
           { key: 'protocol', label: '访问协议', children: form.getFieldValue('protocol') || 'HTTPS' },
           { key: 'port', label: '服务端口号', children: form.getFieldValue('port') || 18000 },
           { key: 'api', label: 'API', children: form.getFieldValue('api') || '/v1/chat/completions' },
@@ -566,14 +600,14 @@ export function OnlineServicePage() {
       <section className="form-section">
         <h2>高级配置</h2>
         <Descriptions colon={false} column={4} items={[
-          { key: 'route', label: '高性能路由', children: <Badge status="success" text="启用" /> },
+          { key: 'route', label: '高性能路由', children: <StatusBadge status="success" text="启用" /> },
           { key: 'scale', label: '扩缩容', children: '关闭' },
           {
             key: 'affinity',
             label: '节点亲和性',
             children: affinity ? (
               <Space size={4}>
-                <Badge status="success" text="启用" />
+                <StatusBadge status="success" text="启用" />
                 <Popover
                   arrow
                   placement="top"
@@ -625,6 +659,66 @@ export function OnlineServicePage() {
           )}
         </footer>
       </Form>
+
+      <Modal
+        className="accelerator-config-modal"
+        title="加速卡配置"
+        open={acceleratorConfigOpen}
+        width={520}
+        okText="确定"
+        cancelText="取消"
+        onCancel={() => setAcceleratorConfigOpen(false)}
+        onOk={() => {
+          acceleratorForm.validateFields().then(() => {
+            setAcceleratorConfigOpen(false);
+            message.success('加速卡配置已更新');
+          });
+        }}
+      >
+        <Form
+          form={acceleratorForm}
+          className="accelerator-config-form"
+          layout="vertical"
+          colon={false}
+        >
+          <Form.Item name="accelerator" label="加速卡" rules={[{ required: true, message: '请选择加速卡' }]}>
+            <Select options={[
+              { value: '英伟达 RTX PRO 5000 × 1', label: '英伟达 RTX PRO 5000 × 1' },
+              { value: '昇腾 / Ascend910B', label: '昇腾 / Ascend910B' },
+              { value: '沐曦 MXC500 × 1', label: '沐曦 MXC500 × 1' },
+            ]} />
+          </Form.Item>
+          <Form.Item name="mode" label="使用模式" rules={[{ required: true, message: '请选择使用模式' }]}>
+            <Radio.Group options={[
+              { value: 'passthrough', label: '直通' },
+              { value: 'eNPU', label: 'eNPU' },
+            ]} />
+          </Form.Item>
+          <Form.Item name="compute" label="算力" rules={[{ required: true, message: '请输入算力' }]}>
+            <FixedUnitNumberInput min={1} max={100} unit="%" />
+          </Form.Item>
+          <Form.Item name="memory" label="显存" extra="支持1MiB的整数倍切分" rules={[{ required: true, message: '请输入显存' }]}>
+            <SelectUnitNumberInput min={1} unitDefaultValue="MiB" />
+          </Form.Item>
+          <Form.Item name="schedule" label="调度方式" rules={[{ required: true, message: '请选择调度方式' }]}>
+            <Radio.Group options={[
+              { value: 'density', label: '密度' },
+              { value: 'performance', label: '性能' },
+            ]} />
+          </Form.Item>
+          <Form.Item
+            name="partition"
+            label={<FieldHelp tip="按业务弹性需求选择加速卡切分策略。">划分模式</FieldHelp>}
+            rules={[{ required: true, message: '请选择划分模式' }]}
+          >
+            <Select options={[
+              { value: 'elastic', label: '弹性' },
+              { value: 'fixed', label: '固定' },
+              { value: 'exclusive', label: '独占' },
+            ]} />
+          </Form.Item>
+        </Form>
+      </Modal>
 
       <Modal
         className="model-picker-modal"

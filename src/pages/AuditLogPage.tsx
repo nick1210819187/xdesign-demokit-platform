@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { HTMLAttributes, Key, MouseEvent as ReactMouseEvent } from 'react';
 import {
   App as AntdApp,
-  Badge,
   Button,
   Checkbox,
   DatePicker,
@@ -35,6 +34,7 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { auditLogs, type AuditLog } from '../data/auditLogs';
+import { StatusBadge } from '../components/StatusBadge';
 
 const { RangePicker } = DatePicker;
 
@@ -154,7 +154,7 @@ function includesText(source: string, query?: string) {
 
 function resultBadge(value: AuditLog['result']) {
   const status = value === '成功' ? 'success' : value === '失败' ? 'error' : 'processing';
-  return <Badge status={status} text={value} />;
+  return <StatusBadge status={status} text={value} />;
 }
 
 function TwoLineCell({ children, mono = false }: { children: string; mono?: boolean }) {
@@ -481,7 +481,7 @@ export function AuditLogPage({
     {
       title: 'Status',
       key: 'state',
-      render: () => <Badge status="success" text="Finished" />,
+      render: () => <StatusBadge status="success" text="Finished" />,
     },
     { title: 'Upgrade Status', dataIndex: 'upgradeNum', key: 'upgradeNum' },
     {

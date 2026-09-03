@@ -5,6 +5,7 @@ import { firstSelectable, navigation, type PrimaryKey } from './data/navigation'
 import { AuditLogPage } from './pages/AuditLogPage';
 import { CardChoicePage } from './pages/CardChoicePage';
 import { ComponentLibraryPage } from './pages/ComponentLibraryPage';
+import { ContainerGroupCreatePage } from './pages/ContainerGroupCreatePage';
 import { HomePage } from './pages/HomePage';
 import { ModelGalleryPage } from './pages/ModelGalleryPage';
 import { OnlineServicePage } from './pages/OnlineServicePage';
@@ -13,6 +14,7 @@ import { DataVisualizationPage } from './pages/DataVisualizationPage';
 import { CustomHomePage } from './pages/CustomHomePage';
 import { DetailPage } from './pages/DetailPage';
 import { GraphicTablePage } from './pages/GraphicTablePage';
+import { HardwareResourcePage } from './pages/HardwareResourcePage';
 import { ModalDrawerPage } from './pages/ModalDrawerPage';
 import { TreeTablePage } from './pages/TreeTablePage';
 
@@ -25,6 +27,9 @@ const pageTitles: Record<string, string> = {
   'online-service': '在线服务',
   'prompt-template': 'Prompt模板',
   'component-library': '组件 DemoKit',
+  'container-group-create': '容器组创建',
+  'fke-complex-page': 'FKE复杂页面',
+  'hardware-resource': '硬件资源',
   'secondary-page': '二级页面',
   'custom-home': '自定义首页',
   'detail-page': '详情页',
@@ -44,7 +49,12 @@ const resolveRoute = () => {
   const [secondaryValue, rawQuery = ''] = (rawSecondary || '').split('?');
   const secondary = secondaryValue || firstSelectable(navigation[primary]) || 'audit-log';
   const params = new URLSearchParams(rawQuery);
-  return { primary, secondary, hideSecondaryNav: params.get('focus') === 'home-edit' && primary === 'kit' && secondary === 'custom-home' };
+  const hideSecondaryNav = primary === 'kit' && (
+    (secondary === 'custom-home' && params.get('focus') === 'home-edit')
+    || secondary === 'container-group-create'
+    || secondary === 'fke-complex-page'
+  );
+  return { primary, secondary, hideSecondaryNav };
 };
 
 export default function App() {
@@ -60,18 +70,35 @@ export default function App() {
     window.history.replaceState(null, '', '#home/');
   }, []);
 
+  const handleGoSecondaryPage = useCallback(() => {
+    setActivePrimary('kit');
+    setActiveSecondary('secondary-page');
+    setHideSecondaryNav(false);
+    window.history.replaceState(null, '', '#kit/secondary-page');
+  }, []);
+
+  const handleOpenContainerCreate = useCallback(() => {
+    setActivePrimary('kit');
+    setActiveSecondary('fke-complex-page');
+    setHideSecondaryNav(true);
+    window.history.replaceState(null, '', '#kit/fke-complex-page');
+  }, []);
+
   const page = useMemo(() => {
     if (activePrimary === 'home') {
       return <HomePage />;
     }
     if (activePrimary === 'ops' && activeSecondary === 'audit-log') return <AuditLogPage />;
     if (activePrimary === 'kit' && activeSecondary === 'component-library') return <ComponentLibraryPage />;
-    if (activePrimary === 'kit' && activeSecondary === 'secondary-page') return <OnlineServicePage />;
+    if (activePrimary === 'kit' && activeSecondary === 'secondary-page') return <OnlineServicePage onOpenContainerCreate={handleOpenContainerCreate} />;
+    if (activePrimary === 'kit' && activeSecondary === 'container-group-create') return <ContainerGroupCreatePage onExit={handleGoSecondaryPage} />;
+    if (activePrimary === 'kit' && activeSecondary === 'fke-complex-page') return <ContainerGroupCreatePage onExit={handleGoSecondaryPage} />;
     if (activePrimary === 'kit' && activeSecondary === 'custom-home') return <CustomHomePage onExit={handleGoHome} />;
     if (activePrimary === 'kit' && activeSecondary === 'detail-page') return <DetailPage />;
     if (activePrimary === 'kit' && activeSecondary === 'modal-drawer') return <ModalDrawerPage />;
     if (activePrimary === 'kit' && activeSecondary === 'tree-table') return <TreeTablePage />;
     if (activePrimary === 'kit' && activeSecondary === 'graphic-table') return <GraphicTablePage />;
+    if (activePrimary === 'kit' && activeSecondary === 'hardware-resource') return <HardwareResourcePage />;
     if (activePrimary === 'kit' && activeSecondary === 'card-choice') return <CardChoicePage />;
     if (activePrimary === 'kit' && activeSecondary === 'normal-table') {
       return <AuditLogPage title="普通表格" showRetention={false} queryMode="simple" />;
@@ -82,13 +109,14 @@ export default function App() {
     if (activePrimary === 'kit' && activeSecondary === 'filter-card') return <ModelGalleryPage />;
     if (activePrimary === 'kit' && activeSecondary === 'data-visualization') return <DataVisualizationPage />;
     return <PlaceholderPage title={pageTitles[activeSecondary] || activeSecondary || '模块'} />;
-  }, [activePrimary, activeSecondary, handleGoHome]);
+  }, [activePrimary, activeSecondary, handleGoHome, handleGoSecondaryPage, handleOpenContainerCreate]);
 
   const handleNavigate = (primary: PrimaryKey, secondary: string) => {
     const nextSecondary = secondary || firstSelectable(navigation[primary]);
+    const nextHideSecondaryNav = primary === 'kit' && nextSecondary === 'fke-complex-page';
     setActivePrimary(primary);
     setActiveSecondary(nextSecondary);
-    setHideSecondaryNav(false);
+    setHideSecondaryNav(nextHideSecondaryNav);
     window.history.replaceState(null, '', `#${primary}/${nextSecondary}`);
   };
 

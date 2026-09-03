@@ -21,6 +21,7 @@ import {
   Collapse,
   Empty,
   Input,
+  Modal,
   Popconfirm,
   Popover,
   Progress,
@@ -34,16 +35,17 @@ import {
 import {
   AppstoreAddOutlined,
   ArrowLeftOutlined,
-  CheckCircleFilled,
   DeleteOutlined,
   DragOutlined,
   ExpandOutlined,
+  EyeOutlined,
   MinusOutlined,
   PlusOutlined,
   ReloadOutlined,
   SaveOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
+import { StatusBadge } from '../components/StatusBadge';
 
 const GRID_COLUMNS = 4;
 const GRID_ROW_UNITS = 2;
@@ -187,7 +189,7 @@ function WidgetPreview({ type, compact = false }: { type: PreviewType; compact?:
       return (
         <div className="home-widget-preview preview-compact">
           <Typography.Text strong>95%</Typography.Text>
-          <Badge status="success" text="运行正常" />
+          <StatusBadge status="success" text="运行正常" />
         </div>
       );
     }
@@ -225,16 +227,16 @@ function WidgetPreview({ type, compact = false }: { type: PreviewType; compact?:
     return (
       <div className="home-widget-preview preview-health">
         <Progress type="dashboard" percent={95} size={64} strokeWidth={10} />
-        <Badge status="success" text="运行正常" />
+        <StatusBadge status="success" text="运行正常" />
       </div>
     );
   }
   if (type === 'alert') {
     return (
       <div className="home-widget-preview preview-alerts">
-        <Badge status="error" text="紧急 2" />
-        <Badge status="warning" text="警告 4" />
-        <Badge status="processing" text="提示 7" />
+        <StatusBadge status="error" text="紧急 2" />
+        <StatusBadge status="warning" text="警告 4" />
+        <StatusBadge status="processing" text="提示 7" />
       </div>
     );
   }
@@ -339,11 +341,6 @@ function LibraryCard({ widget, added }: { widget: WidgetDefinition; added: boole
     >
       <div className="component-library-card-head">
         <Typography.Text strong>{widget.title}</Typography.Text>
-        {added ? (
-          <Tag icon={<CheckCircleFilled />}>已添加</Tag>
-        ) : (
-          <Tag>{widget.defaultSpan} 栏 × {widget.defaultRowSpan / GRID_ROW_UNITS} 行</Tag>
-        )}
       </div>
       <Typography.Paragraph ellipsis={{ rows: 2 }}>{widget.description}</Typography.Paragraph>
     </Card>
@@ -455,6 +452,7 @@ export function CustomHomePage({ onExit }: CustomHomePageProps) {
   const [activeDrag, setActiveDrag] = useState<DragData | null>(null);
   const [candidate, setCandidate] = useState<DropCandidate | null>(null);
   const [dirty, setDirty] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const addedIds = useMemo(() => new Set(layout.map((item) => item.id)), [layout]);
   const occupiedRowUnits = useMemo(() => {
@@ -634,11 +632,12 @@ export function CustomHomePage({ onExit }: CustomHomePageProps) {
               </Tooltip>
               <Typography.Title level={3}>编辑首页</Typography.Title>
               <Tag color="blue">当前角色：运营管理员</Tag>
-              {dirty ? <Badge status="warning" text="有未保存修改" /> : null}
+              {dirty ? <StatusBadge status="warning" text="有未保存修改" /> : null}
             </Space>
           </div>
           <Space size={8}>
             <Button icon={<ReloadOutlined />} onClick={restoreDefault}>恢复默认</Button>
+            <Button icon={<EyeOutlined />} onClick={() => setPreviewOpen(true)}>预览</Button>
             <Button onClick={confirmCancelAndExit}>取消</Button>
             <Button type="primary" icon={<SaveOutlined />} onClick={saveLayout}>保存</Button>
           </Space>
@@ -735,6 +734,21 @@ export function CustomHomePage({ onExit }: CustomHomePageProps) {
             </div>
           </main>
         </div>
+        <Modal
+          centered
+          className="homepage-preview-modal"
+          footer={null}
+          open={previewOpen}
+          title="首页预览"
+          width={1080}
+          onCancel={() => setPreviewOpen(false)}
+        >
+          <div className="homepage-preview-modal-canvas" role="img" aria-label="配置后的首页预览图示意">
+            <div className="homepage-preview-placeholder">
+              配置后的首页预览图示意
+            </div>
+          </div>
+        </Modal>
       </div>
 
       <DragOverlay dropAnimation={null}>
