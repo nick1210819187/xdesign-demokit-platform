@@ -4,6 +4,8 @@ import { AppShell } from './components/AppShell';
 import { firstSelectable, navigation, type PrimaryKey } from './data/navigation';
 import { AuditLogPage } from './pages/AuditLogPage';
 import { CardChoicePage } from './pages/CardChoicePage';
+import { CardChoicePlainPage } from './pages/CardChoicePlainPage';
+import { CardChoiceTwoPage } from './pages/CardChoiceTwoPage';
 import { ComponentLibraryPage } from './pages/ComponentLibraryPage';
 import { ContainerGroupCreatePage } from './pages/ContainerGroupCreatePage';
 import { HomePage } from './pages/HomePage';
@@ -37,6 +39,8 @@ const pageTitles: Record<string, string> = {
   'tree-table': '左树右表',
   'graphic-table': '图形化表格',
   'card-choice': '卡片选择',
+  'card-choice-plain': '卡片选择（无切图）',
+  'card-choice-two': '卡片选择（两卡）',
   'normal-table': '普通表格',
   'complex-table': '复杂表格',
   'filter-card': '左筛右卡',
@@ -100,6 +104,8 @@ export default function App() {
     if (activePrimary === 'kit' && activeSecondary === 'graphic-table') return <GraphicTablePage />;
     if (activePrimary === 'kit' && activeSecondary === 'hardware-resource') return <HardwareResourcePage />;
     if (activePrimary === 'kit' && activeSecondary === 'card-choice') return <CardChoicePage />;
+    if (activePrimary === 'kit' && activeSecondary === 'card-choice-plain') return <CardChoicePlainPage />;
+    if (activePrimary === 'kit' && activeSecondary === 'card-choice-two') return <CardChoiceTwoPage />;
     if (activePrimary === 'kit' && activeSecondary === 'normal-table') {
       return <AuditLogPage title="普通表格" showRetention={false} queryMode="simple" />;
     }
