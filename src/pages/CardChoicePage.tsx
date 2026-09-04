@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
-import { Button, Card, Space, Steps, Typography } from 'antd';
+import { Button, Card, Radio, Space, Steps, Typography } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 
 type ChoiceKey = 'create' | 'template' | 'clone' | 'import' | 'convert';
@@ -96,6 +96,9 @@ export function CardChoicePage() {
                 tabIndex={0}
                 aria-pressed={selected === item.key}
               >
+                <div className="creation-choice-radio-top">
+                  <Radio checked={selected === item.key} />
+                </div>
                 <div className="creation-choice-visual">
                   <img src={item.image} alt="" draggable={false} />
                 </div>

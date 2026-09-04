@@ -223,8 +223,12 @@ export function AppShell({ activePrimary, activeSecondary, children, hideSeconda
     <div className={`app-shell nav-theme-${navTheme}${collapsed ? ' nav-collapsed' : ''}${hideSecondaryNav ? ' secondary-hidden' : ''}${activePrimary === 'home' ? ' home-preview-shell' : ''}`}>
       <header className="topbar">
         <div className="brand-lockup" aria-label="FusionOne Center">
-          <img className="brand-mark" src={assetPath('/assets/topbar/fusionone-mark.png')} alt="" draggable={false} />
-          <img className="brand-wordmark" src={assetPath('/assets/topbar/fusionone-wordmark.svg')} alt="FusionOne Center" draggable={false} />
+          <img
+            className="brand-logo"
+            src={assetPath(navTheme === 'dark' ? '/assets/topbar/logo-light.svg' : '/assets/topbar/logo-dark.svg')}
+            alt="FusionOne Center"
+            draggable={false}
+          />
         </div>
         <div className="top-actions">
           <Tooltip title="编辑首页">

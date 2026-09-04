@@ -188,7 +188,17 @@ export const navigation: Record<PrimaryKey, NavItem[]> = {
   ],
   kit: [
     { key: 'secondary-page', label: '二级页面', icon: <DeploymentUnitOutlined /> },
-    { key: 'card-choice', label: '卡片选择', icon: <AppstoreOutlined /> },
+    {
+      key: 'card-choice-group',
+      label: '卡片选择',
+      icon: <AppstoreOutlined />,
+      defaultOpen: true,
+      children: [
+        { key: 'card-choice', label: '卡片选择' },
+        { key: 'card-choice-plain', label: '卡片选择（无切图）' },
+        { key: 'card-choice-two', label: '卡片选择（两卡）' },
+      ],
+    },
     { key: 'normal-table', label: '普通表格', icon: <TableOutlined /> },
     { key: 'complex-table', label: '复杂表格', icon: <TableOutlined /> },
     { key: 'filter-card', label: '左筛右卡', icon: <AppstoreOutlined /> },

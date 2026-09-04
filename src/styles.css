@@ -89,32 +89,27 @@ input {
 
 .brand-lockup {
   position: relative;
-  width: 248px;
+  width: 220px;
   height: 42px;
-  flex: 0 0 248px;
+  flex: 0 0 220px;
+  display: flex;
+  align-items: center;
+  margin-left: 9px;
 }
 
 .brand-lockup img {
-  position: absolute;
   display: block;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
 }
 
-.brand-mark {
-  left: 0;
-  top: 0;
-  width: 42px;
-  height: 42px;
+.brand-logo {
+  max-width: 100%;
+  max-height: 38px;
+  width: auto;
+  height: auto;
   object-fit: contain;
-}
-
-.brand-wordmark {
-  left: 43px;
-  top: 13px;
-  width: 164px;
-  height: 15px;
 }
 
 .top-actions {
@@ -2793,6 +2788,8 @@ body.is-resizing-table-column {
 
 .workspace:has(.online-service-page),
 .workspace:has(.card-choice-page),
+.workspace:has(.card-choice-plain-page),
+.workspace:has(.card-choice-two-page),
 .workspace:has(.custom-home-page),
 .workspace:has(.detail-page),
 .workspace:has(.container-create-page) {
@@ -2801,6 +2798,8 @@ body.is-resizing-table-column {
 
 .workspace-inner:has(.online-service-page),
 .workspace-inner:has(.card-choice-page),
+.workspace-inner:has(.card-choice-plain-page),
+.workspace-inner:has(.card-choice-two-page),
 .workspace-inner:has(.custom-home-page),
 .workspace-inner:has(.detail-page),
 .workspace-inner:has(.container-create-page) {
@@ -2810,6 +2809,8 @@ body.is-resizing-table-column {
 
 .online-service-page,
 .card-choice-page,
+.card-choice-plain-page,
+.card-choice-two-page,
 .custom-home-page,
 .detail-page,
 .container-create-page {
@@ -2819,6 +2820,8 @@ body.is-resizing-table-column {
 
 .online-service-page,
 .card-choice-page,
+.card-choice-plain-page,
+.card-choice-two-page,
 .custom-home-page,
 .detail-page {
   flex-direction: column;
@@ -4277,6 +4280,178 @@ body.is-resizing-table-column {
   line-height: 28px;
 }
 
+/* 无切图版本：去掉图片区，压缩卡片高度，内容适度靠上 */
+.card-choice-plain-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  padding: clamp(32px, 5dvh, 64px) 40px 40px;
+}
+
+.page-subtitle {
+  width: min(100%, 1480px);
+  text-align: left;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.page-subtitle .ant-typography {
+  font-size: 14px;
+}
+
+.creation-choice-card.plain.ant-card {
+  height: 320px;
+}
+
+.creation-choice-card.plain .ant-card-body {
+  padding: 28px 28px 24px;
+}
+
+.creation-choice-card.plain .creation-choice-copy {
+  flex: none;
+  justify-content: flex-start;
+}
+
+.creation-choice-card.plain .creation-choice-copy h4.ant-typography {
+  margin-bottom: 14px;
+}
+
+.creation-choice-radio-top {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 2;
+}
+
+.creation-choice-card.plain .creation-choice-copy {
+  padding-top: 28px;
+}
+
+/* 两卡版本：创建集群类型选择 */
+.card-choice-two-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(32px, 5dvh, 64px) 40px 40px;
+}
+
+.cluster-type-panel {
+  width: min(100%, 1200px);
+  position: relative;
+  border: 1px solid rgba(0, 11, 35, 0.12);
+  border-radius: 12px;
+  padding: 36px 40px 40px;
+  background: var(--surface);
+}
+
+.cluster-type-label {
+  position: absolute;
+  top: -12px;
+  left: 24px;
+  padding: 0 12px;
+  background: var(--surface);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-1);
+  line-height: 24px;
+}
+
+.cluster-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+}
+
+.cluster-type-card {
+  position: relative;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 11, 35, 0.12);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(var(--card-tint), 0.05) 0%, rgba(var(--card-tint), 0.015) 40%, rgba(var(--card-tint), 0) 65%),
+    #fff;
+  cursor: pointer;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  padding: 20px 28px 28px;
+}
+
+.cluster-type-card:hover {
+  border-color: rgba(18, 77, 238, 0.24);
+}
+
+.cluster-type-card.selected {
+  border-color: var(--content-primary);
+  box-shadow: 0 0 0 1px var(--content-primary), 0 10px 24px rgba(0, 11, 35, 0.07);
+}
+
+.cluster-type-radio {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  margin-bottom: 4px;
+}
+
+.cluster-type-visual {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.cluster-type-visual img {
+  max-height: 195px;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.85;
+  pointer-events: none;
+  user-select: none;
+}
+
+.cluster-type-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cluster-type-copy h4.ant-typography {
+  margin: 0 0 10px;
+  color: var(--text-1);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 26px;
+}
+
+.cluster-type-copy .ant-typography,
+.cluster-type-copy div.ant-typography {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 14px;
+  line-height: 24px;
+}
+
+@media (max-width: 960px) {
+  .cluster-type-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .cluster-type-panel {
+    padding: 28px 20px 24px;
+  }
+
+  .cluster-type-card {
+    min-height: 360px;
+  }
+}
+
 @media (max-width: 1440px) {
   .creation-card-grid {
     grid-template-columns: repeat(3, minmax(220px, 1fr));
@@ -4288,6 +4463,10 @@ body.is-resizing-table-column {
     padding: 24px;
   }
 
+  .card-choice-plain-content {
+    padding: 24px;
+  }
+
   .creation-card-grid {
     grid-template-columns: 1fr;
   }
@@ -4295,6 +4474,11 @@ body.is-resizing-table-column {
   .creation-choice-card.ant-card {
     height: auto;
     min-height: 420px;
+  }
+
+  .creation-choice-card.plain.ant-card {
+    height: auto;
+    min-height: 200px;
   }
 }
 
