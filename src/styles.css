@@ -119,6 +119,60 @@ input {
   color: var(--text-1);
 }
 
+.top-status-group {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.top-status-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  line-height: 1;
+  cursor: default;
+  flex: 0 0 auto;
+}
+
+.top-status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 11px;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.top-status-icon .anticon {
+  font-size: 14px;
+}
+
+.top-status-count {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text-1);
+  white-space: nowrap;
+}
+
+.status-alert {
+  background: rgba(247, 0, 0, 0.08);
+  color: #f70000;
+}
+
+.status-warning {
+  background: rgba(245, 166, 35, 0.14);
+  color: #f5a623;
+}
+
+.status-info {
+  background: rgba(18, 77, 238, 0.08);
+  color: #124dee;
+}
+
 .top-actions .ant-btn-text:hover {
   color: var(--brand) !important;
   background: rgba(247, 0, 0, 0.08) !important;

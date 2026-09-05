@@ -70,7 +70,7 @@ const hardwareSummaryItems = [
   {
     key: 'tasks',
     value: '3',
-    title: '总数',
+    title: '运行任务总数',
     percent: 82,
     segments: [
       { start: 0, end: 82, color: '#124DEE' },

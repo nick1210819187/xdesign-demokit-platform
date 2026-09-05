@@ -25,13 +25,36 @@ const pageTitles: Record<string, string> = {
   server: '服务器',
   network: '网络',
   'model-overview': '模型概览',
-  'model-management': '模型管理',
+  'model-gallery': '模型广场',
+  'experience-chat': '对话体验',
+  'experience-prompt': 'Prompt 体验',
+  'experience-compare': '模型对比',
+  'model-list': '模型列表',
+  'model-repo': '模型仓库',
+  'model-version': '模型版本',
   'online-service': '在线服务',
-  'prompt-template': 'Prompt模板',
+  'prompt-template': 'Prompt 模板',
+  'eval-task': '评估任务',
+  'eval-report': '评估报告',
+  'train-task': '训练任务',
+  'train-config': '训练配置',
+  'train-resource': '训练资源',
+  notebook: 'Notebook',
+  'algorithm-manage': '算法管理',
+  'code-repo': '代码仓库',
+  dataset: '数据集',
+  'data-label': '数据标注',
+  'data-version': '数据版本',
+  'image-management': '镜像管理',
+  'api-key-list': 'Key 管理',
+  'api-access-log': '访问记录',
+  'user-resource': '用户资源',
+  'hardware-resource': '硬件资源',
+  'console-overview': '控制台总览',
+  'console-billing': '费用账单',
   'component-library': '组件 DemoKit',
   'container-group-create': '容器组创建',
   'fke-complex-page': 'FKE复杂页面',
-  'hardware-resource': '硬件资源',
   'secondary-page': '二级页面',
   'custom-home': '自定义首页',
   'detail-page': '详情页',
@@ -93,6 +116,8 @@ export default function App() {
       return <HomePage />;
     }
     if (activePrimary === 'ops' && activeSecondary === 'audit-log') return <AuditLogPage />;
+    if (activePrimary === 'model' && activeSecondary === 'online-service') return <OnlineServicePage onOpenContainerCreate={handleOpenContainerCreate} />;
+    if (activePrimary === 'model' && activeSecondary === 'hardware-resource') return <HardwareResourcePage />;
     if (activePrimary === 'kit' && activeSecondary === 'component-library') return <ComponentLibraryPage />;
     if (activePrimary === 'kit' && activeSecondary === 'secondary-page') return <OnlineServicePage onOpenContainerCreate={handleOpenContainerCreate} />;
     if (activePrimary === 'kit' && activeSecondary === 'container-group-create') return <ContainerGroupCreatePage onExit={handleGoSecondaryPage} />;
@@ -126,6 +151,10 @@ export default function App() {
     window.history.replaceState(null, '', `#${primary}/${nextSecondary}`);
   };
 
+  // 当选择「模型 → 推理服务 → 在线服务」或「模型 → 资源监控 → 硬件资源」时，
+  // 隐藏一级导航中的「示例」，用于截图模拟线上效果
+  const hideKitModule = activePrimary === 'model' && (activeSecondary === 'hardware-resource' || activeSecondary === 'online-service');
+
   const handleEditHome = () => {
     setActivePrimary('kit');
     setActiveSecondary('custom-home');
@@ -139,6 +168,7 @@ export default function App() {
         activePrimary={activePrimary}
         activeSecondary={activeSecondary}
         hideSecondaryNav={hideSecondaryNav}
+        hideKitModule={hideKitModule}
         onEditHome={handleEditHome}
         onNavigate={handleNavigate}
       >

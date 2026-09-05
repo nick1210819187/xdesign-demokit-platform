@@ -11,16 +11,18 @@ import {
   Typography,
 } from 'antd';
 import {
+  AlertOutlined,
   BellOutlined,
   BgColorsOutlined,
   CustomerServiceOutlined,
   DownOutlined,
-  EditOutlined,
   InfoCircleOutlined,
   LinkOutlined,
   MenuFoldOutlined,
   ProfileOutlined,
   QuestionCircleOutlined,
+  SmileOutlined,
+  WarningOutlined,
 } from '@ant-design/icons';
 import { contentTheme } from '../theme';
 import { firstSelectable, navigation, primaryModules, type NavItem, type PrimaryKey } from '../data/navigation';
@@ -63,6 +65,7 @@ type AppShellProps = {
   activeSecondary: string;
   children: ReactNode;
   hideSecondaryNav?: boolean;
+  hideKitModule?: boolean;
   onEditHome: () => void;
   onNavigate: (primary: PrimaryKey, secondary: string) => void;
 };
@@ -167,7 +170,7 @@ function SecondaryNav({
   );
 }
 
-export function AppShell({ activePrimary, activeSecondary, children, hideSecondaryNav = false, onEditHome, onNavigate }: AppShellProps) {
+export function AppShell({ activePrimary, activeSecondary, children, hideSecondaryNav = false, hideKitModule = false, onNavigate }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [navTheme, setNavTheme] = useState<NavTheme>(() => window.localStorage.getItem('xdesign-nav-theme') === 'dark' ? 'dark' : 'light');
   const [themeDraft, setThemeDraft] = useState<NavTheme>(navTheme);
@@ -231,9 +234,32 @@ export function AppShell({ activePrimary, activeSecondary, children, hideSeconda
           />
         </div>
         <div className="top-actions">
-          <Tooltip title="编辑首页">
-            <Button type="text" icon={<EditOutlined />} aria-label="编辑首页" onClick={onEditHome} />
-          </Tooltip>
+          <div className="top-status-group">
+            <Tooltip title="告警">
+              <span className="top-status-item" aria-label="告警">
+                <span className="top-status-icon status-alert">
+                  <AlertOutlined />
+                </span>
+                <span className="top-status-count">2</span>
+              </span>
+            </Tooltip>
+            <Tooltip title="警告">
+              <span className="top-status-item" aria-label="警告">
+                <span className="top-status-icon status-warning">
+                  <WarningOutlined />
+                </span>
+                <span className="top-status-count">5</span>
+              </span>
+            </Tooltip>
+            <Tooltip title="提示">
+              <span className="top-status-item" aria-label="提示">
+                <span className="top-status-icon status-info">
+                  <InfoCircleOutlined />
+                </span>
+                <span className="top-status-count">3</span>
+              </span>
+            </Tooltip>
+          </div>
           <Tooltip title="界面主题">
             <Button
               type="text"
@@ -253,7 +279,7 @@ export function AppShell({ activePrimary, activeSecondary, children, hideSeconda
           <Tooltip title="文档"><Button type="text" icon={<ProfileOutlined />} /></Tooltip>
           <Tooltip title="帮助"><Button type="text" icon={<QuestionCircleOutlined />} /></Tooltip>
           <Tooltip title="通知"><Button type="text" icon={<BellOutlined />} /></Tooltip>
-          <Tooltip title="关于"><Button type="text" icon={<InfoCircleOutlined />} /></Tooltip>
+          <Tooltip title="关于"><Button type="text" icon={<SmileOutlined />} /></Tooltip>
           <Dropdown menu={{ items: [{ key: 'profile', label: '个人信息' }, { key: 'logout', label: '退出登录' }] }}>
             <button className="user-account" type="button">
               <Avatar size={32} src={assetPath('/assets/avatar/admin.svg')} />
@@ -277,7 +303,9 @@ export function AppShell({ activePrimary, activeSecondary, children, hideSeconda
           }}
         >
           <div className="rail-list">
-            {primaryModules.map((item) => (
+            {primaryModules
+              .filter((item) => !(hideKitModule && item.key === 'kit'))
+              .map((item) => (
               <button
                 className={`rail-item ${item.key === activePrimary ? 'active' : ''}`}
                 key={item.key}
