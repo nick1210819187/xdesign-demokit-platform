@@ -26,6 +26,7 @@ import {
 } from '@ant-design/icons';
 import { contentTheme } from '../theme';
 import { firstSelectable, navigation, primaryModules, type NavItem, type PrimaryKey } from '../data/navigation';
+import { localeLabels, navLabelEn, primaryLabelEn, shellText, type Locale } from '../i18n';
 
 type NavTheme = 'dark' | 'light';
 
@@ -66,6 +67,8 @@ type AppShellProps = {
   children: ReactNode;
   hideSecondaryNav?: boolean;
   hideKitModule?: boolean;
+  locale: Locale;
+  onLocaleChange: (locale: Locale) => void;
   onEditHome: () => void;
   onNavigate: (primary: PrimaryKey, secondary: string) => void;
 };
@@ -75,6 +78,7 @@ function SecondaryNav({
   activeSecondary,
   collapsed,
   floating = false,
+  locale,
   style,
   panelRef,
   onMouseEnter,
@@ -85,6 +89,7 @@ function SecondaryNav({
   activeSecondary: string;
   collapsed: boolean;
   floating?: boolean;
+  locale: Locale;
   style?: CSSProperties;
   panelRef?: Ref<HTMLElement>;
   onMouseEnter?: () => void;
@@ -92,6 +97,8 @@ function SecondaryNav({
   onNavigate: (secondary: string) => void;
 }) {
   const groups = navigation[activePrimary];
+  const text = shellText[locale];
+  const labelOf = (item: NavItem) => locale === 'en' ? navLabelEn[item.key] ?? item.label : item.label;
   const getDefaultOpenKeys = () => groups
     .filter((item) => item.children?.length && (item.defaultOpen || item.children.some((child) => child.key === activeSecondary)))
     .map((item) => item.key);
@@ -106,8 +113,9 @@ function SecondaryNav({
   if (!groups.length || (collapsed && !floating)) return null;
 
   const renderItem = (item: NavItem) => {
-    const selected = item.key === activeSecondary;
-    const childSelected = item.children?.some((child) => child.key === activeSecondary);
+    const isSelectedKey = (key: string) => key === activeSecondary || (key === 'advanced-config' && activeSecondary.startsWith('advanced-config-'));
+    const selected = isSelectedKey(item.key);
+    const childSelected = item.children?.some((child) => isSelectedKey(child.key));
     const hasChildren = !!item.children?.length;
     const expanded = !!(hasChildren && (openKeys.includes(item.key) || hoverOpen === item.key || childSelected));
     return (
@@ -134,7 +142,7 @@ function SecondaryNav({
         >
           <span className="subnav-row-main">
             {item.icon}
-            <span>{item.label}</span>
+            <span>{labelOf(item)}</span>
           </span>
           {hasChildren ? <DownOutlined className={`subnav-chevron ${expanded ? 'open' : ''}`} /> : null}
         </button>
@@ -142,12 +150,12 @@ function SecondaryNav({
           <div className="subnav-children">
             {item.children?.map((child) => (
               <button
-                className={`subnav-child ${child.key === activeSecondary ? 'selected' : ''}`}
+                className={`subnav-child ${isSelectedKey(child.key) ? 'selected' : ''}`}
                 key={child.key}
                 type="button"
                 onClick={() => onNavigate(child.key)}
               >
-                {child.label}
+                {labelOf(child)}
               </button>
             ))}
           </div>
@@ -161,7 +169,7 @@ function SecondaryNav({
       ref={panelRef}
       className={floating ? 'floating-nav' : 'secondary-nav'}
       style={style}
-      aria-label={floating ? '悬浮导航预览' : '二级导航'}
+      aria-label={floating ? text.floatingNav : text.secondaryNav}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
@@ -170,7 +178,7 @@ function SecondaryNav({
   );
 }
 
-export function AppShell({ activePrimary, activeSecondary, children, hideSecondaryNav = false, hideKitModule = false, onNavigate }: AppShellProps) {
+export function AppShell({ activePrimary, activeSecondary, children, hideSecondaryNav = false, hideKitModule = false, locale, onLocaleChange, onNavigate }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [navTheme, setNavTheme] = useState<NavTheme>(() => window.localStorage.getItem('xdesign-nav-theme') === 'dark' ? 'dark' : 'light');
   const [themeDraft, setThemeDraft] = useState<NavTheme>(navTheme);
@@ -181,6 +189,7 @@ export function AppShell({ activePrimary, activeSecondary, children, hideSeconda
   const [flyoutAnchor, setFlyoutAnchor] = useState<{ top: number } | null>(null);
   const flyoutCloseTimer = useRef<number | null>(null);
   const flyoutRef = useRef<HTMLElement | null>(null);
+  const text = shellText[locale];
 
   const handlePrimary = (key: PrimaryKey) => {
     setFlyoutOpen(false);
@@ -223,7 +232,7 @@ export function AppShell({ activePrimary, activeSecondary, children, hideSeconda
   }, [flyoutOpen, flyoutAnchor, flyoutPrimary]);
 
   return (
-    <div className={`app-shell nav-theme-${navTheme}${collapsed ? ' nav-collapsed' : ''}${hideSecondaryNav ? ' secondary-hidden' : ''}${activePrimary === 'home' ? ' home-preview-shell' : ''}`}>
+    <div lang={locale === 'en' ? 'en' : 'zh-CN'} className={`app-shell locale-${locale} nav-theme-${navTheme}${collapsed ? ' nav-collapsed' : ''}${hideSecondaryNav ? ' secondary-hidden' : ''}${activePrimary === 'home' ? ' home-preview-shell' : ''}`}>
       <header className="topbar">
         <div className="brand-lockup" aria-label="FusionOne Center">
           <img
@@ -235,24 +244,24 @@ export function AppShell({ activePrimary, activeSecondary, children, hideSeconda
         </div>
         <div className="top-actions">
           <div className="top-status-group">
-            <Tooltip title="告警">
-              <span className="top-status-item" aria-label="告警">
+            <Tooltip title={text.alert}>
+              <span className="top-status-item" aria-label={text.alert}>
                 <span className="top-status-icon status-alert">
                   <AlertOutlined />
                 </span>
                 <span className="top-status-count">2</span>
               </span>
             </Tooltip>
-            <Tooltip title="警告">
-              <span className="top-status-item" aria-label="警告">
+            <Tooltip title={text.warning}>
+              <span className="top-status-item" aria-label={text.warning}>
                 <span className="top-status-icon status-warning">
                   <WarningOutlined />
                 </span>
                 <span className="top-status-count">5</span>
               </span>
             </Tooltip>
-            <Tooltip title="提示">
-              <span className="top-status-item" aria-label="提示">
+            <Tooltip title={text.info}>
+              <span className="top-status-item" aria-label={text.info}>
                 <span className="top-status-icon status-info">
                   <InfoCircleOutlined />
                 </span>
@@ -260,32 +269,47 @@ export function AppShell({ activePrimary, activeSecondary, children, hideSeconda
               </span>
             </Tooltip>
           </div>
-          <Tooltip title="界面主题">
+          <Tooltip title={text.theme}>
             <Button
               type="text"
               icon={<BgColorsOutlined />}
-              aria-label="切换导航主题"
+              aria-label={text.switchTheme}
               onClick={() => {
                 setThemeDraft(navTheme);
                 setThemeOpen(true);
               }}
             />
           </Tooltip>
-          <button className="language-switch" type="button">
-            中文(简体) <DownOutlined />
-          </button>
-          <Tooltip title="客户服务"><Button type="text" icon={<CustomerServiceOutlined />} /></Tooltip>
-          <Tooltip title="快速链接"><Button type="text" icon={<LinkOutlined />} /></Tooltip>
-          <Tooltip title="文档"><Button type="text" icon={<ProfileOutlined />} /></Tooltip>
-          <Tooltip title="帮助"><Button type="text" icon={<QuestionCircleOutlined />} /></Tooltip>
-          <Tooltip title="通知"><Button type="text" icon={<BellOutlined />} /></Tooltip>
-          <Tooltip title="关于"><Button type="text" icon={<SmileOutlined />} /></Tooltip>
-          <Dropdown menu={{ items: [{ key: 'profile', label: '个人信息' }, { key: 'logout', label: '退出登录' }] }}>
+          <Dropdown
+            menu={{
+              selectedKeys: [locale],
+              items: [
+                { key: 'zh', label: localeLabels.zh },
+                { key: 'en', label: localeLabels.en },
+              ],
+              onClick: ({ key }) => onLocaleChange(key as Locale),
+            }}
+          >
+            <button className="language-switch" type="button" aria-label={text.language}>
+              {localeLabels[locale]} <DownOutlined />
+            </button>
+          </Dropdown>
+          <Tooltip title={text.customerService}><Button type="text" icon={
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+              <path d="M19.96 10.18C19.69 6.96 17.81 2 12 2C10.46 2 9.19 2.35 8.16 2.93L11.14 4.05H11.15C11.42 4.02 11.7 4 12 4C16.76 4 17.74 8.37 17.94 10.21C17.4257 10.4203 16.9856 10.7789 16.6758 11.2402C16.3659 11.7014 16.2003 12.2444 16.2 12.8V14.2C16.2 15.28 16.82 16.25 17.79 16.72C17.37 17.51 16.3 18.58 13.67 18.9C13.3786 18.4543 12.9226 18.142 12.4017 18.0314C11.8808 17.9209 11.3373 18.021 10.89 18.31C9.96 18.92 9.7 20.16 10.31 21.09C10.91 22.02 12.15 22.28 13.08 21.67C13.38 21.48 13.62 21.21 13.78 20.89C18.07 20.4 19.44 18.19 19.87 16.85C20.4294 16.6671 20.9169 16.3127 21.2634 15.837C21.6098 15.3613 21.7976 14.7885 21.8 14.2V12.8C21.8 11.63 21.06 10.58 19.96 10.18ZM19.8 14.2C19.8 14.64 19.44 15 19 15C18.56 15 18.2 14.64 18.2 14.2V12.8C18.2 12.36 18.56 12 19 12C19.44 12 19.8 12.36 19.8 12.8V14.2ZM4.99 10C3.45 10 2.19 11.25 2.19 12.8V14.21C2.19 15.75 3.44 17.01 4.99 17.01C6.54 17.01 7.79 15.76 7.79 14.21V12.8C7.79 11.26 6.54 10 4.99 10ZM5.79 14.21C5.79 14.65 5.43 15.01 4.99 15.01C4.55 15.01 4.19 14.65 4.19 14.21V12.8C4.19 12.36 4.55 12 4.99 12C5.43 12 5.79 12.36 5.79 12.8V14.21ZM6.46 4.55L9 5.5L6.46 6.45L5.5 9L4.55 6.45L2 5.5L4.55 4.55L5.5 2L6.46 4.55Z" fill="currentColor"/>
+            </svg>
+          } /></Tooltip>
+          <Tooltip title={text.quickLinks}><Button type="text" icon={<LinkOutlined />} /></Tooltip>
+          <Tooltip title={text.docs}><Button type="text" icon={<ProfileOutlined />} /></Tooltip>
+          <Tooltip title={text.help}><Button type="text" icon={<QuestionCircleOutlined />} /></Tooltip>
+          <Tooltip title={text.notifications}><Button type="text" icon={<BellOutlined />} /></Tooltip>
+          <Tooltip title={text.about}><Button type="text" icon={<SmileOutlined />} /></Tooltip>
+          <Dropdown menu={{ items: [{ key: 'profile', label: text.profile }, { key: 'logout', label: text.logout }] }}>
             <button className="user-account" type="button">
               <Avatar size={32} src={assetPath('/assets/avatar/admin.svg')} />
               <span className="user-meta">
                 <span className="user-name">Admin</span>
-                <span className="user-role">系统管理员</span>
+                <span className="user-role">{text.adminRole}</span>
               </span>
               <DownOutlined />
             </button>
@@ -296,7 +320,7 @@ export function AppShell({ activePrimary, activeSecondary, children, hideSeconda
       <div className="shell-body">
         <aside
           className="primary-rail"
-          aria-label="一级导航"
+          aria-label={text.primaryNav}
           onMouseEnter={cancelFlyoutClose}
           onMouseLeave={() => {
             if (collapsed && flyoutOpen) scheduleFlyoutClose();
@@ -314,7 +338,9 @@ export function AppShell({ activePrimary, activeSecondary, children, hideSeconda
                 onMouseEnter={(event) => previewPrimary(item.key, event.currentTarget)}
               >
                 <PrimaryRailIcon iconKey={item.iconKey} />
-                <span className="rail-label">{item.label}</span>
+                <span className="rail-label" title={locale === 'en' ? primaryLabelEn[item.key] ?? item.label : item.label}>
+                  {locale === 'en' ? primaryLabelEn[item.key] ?? item.label : item.label}
+                </span>
               </button>
             ))}
           </div>
@@ -325,7 +351,7 @@ export function AppShell({ activePrimary, activeSecondary, children, hideSeconda
                 setFlyoutOpen(false);
                 setCollapsed((value) => !value);
               }}
-              aria-label="折叠二级导航"
+              aria-label={text.collapseSecondary}
             >
               <MenuFoldOutlined />
             </button>
@@ -337,6 +363,7 @@ export function AppShell({ activePrimary, activeSecondary, children, hideSeconda
             activePrimary={activePrimary}
             activeSecondary={activeSecondary}
             collapsed={collapsed}
+            locale={locale}
             onNavigate={(secondary) => onNavigate(activePrimary, secondary)}
           />
         ) : null}
@@ -346,6 +373,7 @@ export function AppShell({ activePrimary, activeSecondary, children, hideSeconda
             activePrimary={flyoutPrimary}
             activeSecondary={flyoutPrimary === activePrimary ? activeSecondary : ''}
             collapsed={false}
+            locale={locale}
             floating
             style={flyoutStyle}
             panelRef={flyoutRef}
@@ -368,11 +396,11 @@ export function AppShell({ activePrimary, activeSecondary, children, hideSeconda
       </div>
       <Modal
         className="theme-switch-modal"
-        title="界面主题"
+        title={text.theme}
         open={themeOpen}
         width={520}
-        okText="确定"
-        cancelText="取消"
+        okText={text.ok}
+        cancelText={text.cancel}
         onCancel={() => {
           setThemeDraft(navTheme);
           setThemeOpen(false);
@@ -383,11 +411,11 @@ export function AppShell({ activePrimary, activeSecondary, children, hideSeconda
           setThemeOpen(false);
         }}
       >
-        <Typography.Text className="theme-modal-subtitle" type="secondary">设置界面主题</Typography.Text>
+        <Typography.Text className="theme-modal-subtitle" type="secondary">{text.themeSubtitle}</Typography.Text>
         <Radio.Group className="theme-card-grid" value={themeDraft} onChange={(event) => setThemeDraft(event.target.value)}>
           {[
-            { value: 'light', title: '浅色导航（默认）', description: '一级与二级导航均为浅色', preview: assetPath('/assets/theme/light-navigation.png') },
-            { value: 'dark', title: '深色导航', description: '顶部与侧边导航均为深色', preview: assetPath('/assets/theme/dark-navigation.png') },
+            { value: 'light', title: text.lightTheme, description: text.lightThemeDesc, preview: assetPath('/assets/theme/light-navigation.png') },
+            { value: 'dark', title: text.darkTheme, description: text.darkThemeDesc, preview: assetPath('/assets/theme/dark-navigation.png') },
           ].map((item) => (
             <Radio key={item.value} value={item.value} className={`theme-card-option ${themeDraft === item.value ? 'selected' : ''}`}>
               <img className="theme-card-preview" src={item.preview} alt="" draggable={false} />

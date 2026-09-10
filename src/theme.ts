@@ -24,7 +24,7 @@ export const contentTheme: ThemeConfig = {
     colorTextDisabled: 'rgba(0, 11, 35, 0.25)',
     colorTextBase: '#000B23',
     colorBorder: 'rgba(0, 11, 35, 0.15)',
-    colorSplit: 'rgba(0, 11, 35, 0.10)',
+    colorSplit: 'rgba(0, 11, 35, 0.15)',
     colorBgContainer: '#FFFFFF',
     colorBgLayout: '#FFFFFF',
     borderRadius: 8,
@@ -82,7 +82,7 @@ export const contentTheme: ThemeConfig = {
       rowHoverBg: '#F7FAFE',
       rowSelectedBg: '#E6F1FF',
       rowSelectedHoverBg: '#B8D4FF',
-      borderColor: 'rgba(0, 11, 35, 0.10)',
+      borderColor: 'rgba(0, 11, 35, 0.15)',
     },
     Card: {
       borderRadiusLG: 8,

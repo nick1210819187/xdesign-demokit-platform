@@ -15,10 +15,14 @@ import { PlaceholderPage } from './pages/PlaceholderPage';
 import { DataVisualizationPage } from './pages/DataVisualizationPage';
 import { CustomHomePage } from './pages/CustomHomePage';
 import { DetailPage } from './pages/DetailPage';
+import { ExceptionStatusPage } from './pages/ExceptionStatusPage';
 import { GraphicTablePage } from './pages/GraphicTablePage';
 import { HardwareResourcePage } from './pages/HardwareResourcePage';
 import { ModalDrawerPage } from './pages/ModalDrawerPage';
 import { TreeTablePage } from './pages/TreeTablePage';
+import type { Locale } from './i18n';
+import { AdvancedConfigPage } from './pages/AdvancedConfigPage';
+import { TextModelPage } from './pages/TextModelPage';
 
 const pageTitles: Record<string, string> = {
   os: '操作系统',
@@ -64,6 +68,25 @@ const pageTitles: Record<string, string> = {
   'card-choice': '卡片选择',
   'card-choice-plain': '卡片选择（无切图）',
   'card-choice-two': '卡片选择（两卡）',
+  'advanced-config': '高级配置',
+  'advanced-config-node-management': '节点管理',
+  'advanced-config-image-management': '镜像管理',
+  'advanced-config-network-management': '网络管理',
+  'advanced-config-disk-pool': '硬盘池',
+  'advanced-config-ruin-pool': '废墟池',
+  'advanced-config-volume-management': '卷管理',
+  'advanced-config-snapshot-policy': '快照策略',
+  'advanced-config-snapshot-management': '快照管理',
+  'advanced-config-client-management': '客户端管理',
+  'advanced-config-block-gateway-management': '网关管理',
+  'advanced-config-folder-management': '文件夹管理',
+  'advanced-config-user-management': '用户管理',
+  'advanced-config-share-management': '共享管理',
+  'advanced-config-permission-management': '权限管理',
+  'advanced-config-file-gateway-management': '网关管理',
+  'advanced-config-ad-domain-management': 'AD 域管理',
+  'text-model': '文本模型',
+  'exception-status': '异常状态',
   'normal-table': '普通表格',
   'complex-table': '复杂表格',
   'filter-card': '左筛右卡',
@@ -89,6 +112,12 @@ export default function App() {
   const [activePrimary, setActivePrimary] = useState<PrimaryKey>(initialRoute.primary);
   const [activeSecondary, setActiveSecondary] = useState(initialRoute.secondary);
   const [hideSecondaryNav, setHideSecondaryNav] = useState(initialRoute.hideSecondaryNav);
+  const [locale, setLocale] = useState<Locale>(() => window.localStorage.getItem('xdesign-locale') === 'en' ? 'en' : 'zh');
+
+  const handleLocaleChange = useCallback((nextLocale: Locale) => {
+    setLocale(nextLocale);
+    window.localStorage.setItem('xdesign-locale', nextLocale);
+  }, []);
 
   const handleGoHome = useCallback(() => {
     setActivePrimary('home');
@@ -111,15 +140,25 @@ export default function App() {
     window.history.replaceState(null, '', '#kit/fke-complex-page');
   }, []);
 
+  const handleOpenAdvancedConfigEntry = useCallback((entry: { key: string }) => {
+    const nextSecondary = `advanced-config-${entry.key}`;
+    setActivePrimary('kit');
+    setActiveSecondary(nextSecondary);
+    setHideSecondaryNav(false);
+    window.history.replaceState(null, '', `#kit/${nextSecondary}`);
+  }, []);
+
   const page = useMemo(() => {
     if (activePrimary === 'home') {
       return <HomePage />;
     }
     if (activePrimary === 'ops' && activeSecondary === 'audit-log') return <AuditLogPage />;
-    if (activePrimary === 'model' && activeSecondary === 'online-service') return <OnlineServicePage onOpenContainerCreate={handleOpenContainerCreate} />;
-    if (activePrimary === 'model' && activeSecondary === 'hardware-resource') return <HardwareResourcePage />;
+    if (activePrimary === 'model' && activeSecondary === 'model-gallery') return <ModelGalleryPage locale={locale} pageTitle={locale === 'en' ? 'Model Gallery' : '模型广场'} />;
+    if (activePrimary === 'model' && activeSecondary === 'text-model') return <TextModelPage locale={locale} />;
+    if (activePrimary === 'model' && activeSecondary === 'online-service') return <OnlineServicePage locale={locale} onOpenContainerCreate={handleOpenContainerCreate} />;
+    if (activePrimary === 'model' && activeSecondary === 'hardware-resource') return <HardwareResourcePage locale={locale} />;
     if (activePrimary === 'kit' && activeSecondary === 'component-library') return <ComponentLibraryPage />;
-    if (activePrimary === 'kit' && activeSecondary === 'secondary-page') return <OnlineServicePage onOpenContainerCreate={handleOpenContainerCreate} />;
+    if (activePrimary === 'kit' && activeSecondary === 'secondary-page') return <OnlineServicePage locale={locale} onOpenContainerCreate={handleOpenContainerCreate} />;
     if (activePrimary === 'kit' && activeSecondary === 'container-group-create') return <ContainerGroupCreatePage onExit={handleGoSecondaryPage} />;
     if (activePrimary === 'kit' && activeSecondary === 'fke-complex-page') return <ContainerGroupCreatePage onExit={handleGoSecondaryPage} />;
     if (activePrimary === 'kit' && activeSecondary === 'custom-home') return <CustomHomePage onExit={handleGoHome} />;
@@ -127,20 +166,24 @@ export default function App() {
     if (activePrimary === 'kit' && activeSecondary === 'modal-drawer') return <ModalDrawerPage />;
     if (activePrimary === 'kit' && activeSecondary === 'tree-table') return <TreeTablePage />;
     if (activePrimary === 'kit' && activeSecondary === 'graphic-table') return <GraphicTablePage />;
-    if (activePrimary === 'kit' && activeSecondary === 'hardware-resource') return <HardwareResourcePage />;
+    if (activePrimary === 'kit' && activeSecondary === 'hardware-resource') return <HardwareResourcePage locale={locale} />;
     if (activePrimary === 'kit' && activeSecondary === 'card-choice') return <CardChoicePage />;
     if (activePrimary === 'kit' && activeSecondary === 'card-choice-plain') return <CardChoicePlainPage />;
     if (activePrimary === 'kit' && activeSecondary === 'card-choice-two') return <CardChoiceTwoPage />;
+    if (activePrimary === 'kit' && activeSecondary === 'advanced-config') return <AdvancedConfigPage onOpenEntry={handleOpenAdvancedConfigEntry} />;
+    if (activePrimary === 'kit' && activeSecondary.startsWith('advanced-config-')) return <PlaceholderPage title={pageTitles[activeSecondary] || '高级配置'} />;
+    if (activePrimary === 'kit' && activeSecondary === 'text-model') return <TextModelPage locale={locale} />;
+    if (activePrimary === 'kit' && activeSecondary === 'exception-status') return <ExceptionStatusPage />;
     if (activePrimary === 'kit' && activeSecondary === 'normal-table') {
       return <AuditLogPage title="普通表格" showRetention={false} queryMode="simple" />;
     }
     if (activePrimary === 'kit' && activeSecondary === 'complex-table') {
       return <AuditLogPage title="复杂表格" showRetention={false} tableMode="complex" />;
     }
-    if (activePrimary === 'kit' && activeSecondary === 'filter-card') return <ModelGalleryPage />;
+    if (activePrimary === 'kit' && activeSecondary === 'filter-card') return <ModelGalleryPage locale={locale} />;
     if (activePrimary === 'kit' && activeSecondary === 'data-visualization') return <DataVisualizationPage />;
     return <PlaceholderPage title={pageTitles[activeSecondary] || activeSecondary || '模块'} />;
-  }, [activePrimary, activeSecondary, handleGoHome, handleGoSecondaryPage, handleOpenContainerCreate]);
+  }, [activePrimary, activeSecondary, handleGoHome, handleGoSecondaryPage, handleOpenAdvancedConfigEntry, handleOpenContainerCreate, locale]);
 
   const handleNavigate = (primary: PrimaryKey, secondary: string) => {
     const nextSecondary = secondary || firstSelectable(navigation[primary]);
@@ -151,9 +194,7 @@ export default function App() {
     window.history.replaceState(null, '', `#${primary}/${nextSecondary}`);
   };
 
-  // 当选择「模型 → 推理服务 → 在线服务」或「模型 → 资源监控 → 硬件资源」时，
-  // 隐藏一级导航中的「示例」，用于截图模拟线上效果
-  const hideKitModule = activePrimary === 'model' && (activeSecondary === 'hardware-resource' || activeSecondary === 'online-service');
+  const hideKitModule = activePrimary === 'model';
 
   const handleEditHome = () => {
     setActivePrimary('kit');
@@ -169,6 +210,8 @@ export default function App() {
         activeSecondary={activeSecondary}
         hideSecondaryNav={hideSecondaryNav}
         hideKitModule={hideKitModule}
+        locale={locale}
+        onLocaleChange={handleLocaleChange}
         onEditHome={handleEditHome}
         onNavigate={handleNavigate}
       >

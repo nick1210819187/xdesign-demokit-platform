@@ -26,6 +26,7 @@ import {
   TeamOutlined,
   ToolOutlined,
   UserOutlined,
+  WarningOutlined,
 } from '@ant-design/icons';
 import type { ReactNode } from 'react';
 
@@ -72,9 +73,7 @@ export const navigation: Record<PrimaryKey, NavItem[]> = {
       label: '体验中心',
       icon: <ExperimentOutlined />,
       children: [
-        { key: 'experience-chat', label: '对话体验' },
-        { key: 'experience-prompt', label: 'Prompt 体验' },
-        { key: 'experience-compare', label: '模型对比' },
+        { key: 'text-model', label: '文本模型' },
       ],
     },
     {
@@ -289,8 +288,11 @@ export const navigation: Record<PrimaryKey, NavItem[]> = {
         { key: 'card-choice', label: '卡片选择' },
         { key: 'card-choice-plain', label: '卡片选择（无切图）' },
         { key: 'card-choice-two', label: '卡片选择（两卡）' },
+        { key: 'advanced-config', label: '高级配置' },
       ],
     },
+    { key: 'text-model', label: '文本模型', icon: <DeploymentUnitOutlined /> },
+    { key: 'exception-status', label: '异常状态', icon: <WarningOutlined /> },
     { key: 'normal-table', label: '普通表格', icon: <TableOutlined /> },
     { key: 'complex-table', label: '复杂表格', icon: <TableOutlined /> },
     { key: 'filter-card', label: '左筛右卡', icon: <AppstoreOutlined /> },

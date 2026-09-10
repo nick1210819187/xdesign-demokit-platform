@@ -37,6 +37,7 @@ import {
 } from '@ant-design/icons';
 import { FixedUnitNumberInput, SelectUnitNumberInput, SpinnerNumberInput } from '../components/NumericInput';
 import { StatusBadge } from '../components/StatusBadge';
+import type { Locale } from '../i18n';
 
 type ModelItem = {
   name: string;
@@ -127,7 +128,338 @@ const affinityRows = Array.from({ length: 8 }, (_, index) => ({
   value: index % 2 === 0 ? 'gpu-compute' : 'nvidia',
 }));
 
-function InferenceParametersPopover() {
+const onlineText = {
+  zh: {
+    detail: '详情',
+    enabled: '启用',
+    disabled: '关闭',
+    on: '开启',
+    systemDefault: '系统默认',
+    sequence: '序号',
+    inferenceEngine: '推理引擎',
+    accelerator: '加速卡',
+    cpuCores: 'CPU（核）',
+    memoryGib: '内存（GiB）',
+    sharedMemoryGib: '共享内存（GiB）',
+    nodeCount: '节点数量',
+    parameterConfig: '参数配置',
+    inputToken: '最大输入 Token',
+    outputToken: '最大输出 Token',
+    batchToken: '批处理 Token 上限',
+    remoteCode: '远程代码加载',
+    property: '属性',
+    type: '类型',
+    operator: '操作符',
+    value: '取值',
+    nodeLabel: '节点标签',
+    acceleratorLabel: '加速卡标签',
+    configure: '配置',
+    serviceInfo: '服务信息',
+    serviceName: '服务名称',
+    enterServiceName: '请输入服务名称',
+    modelSelect: '模型选择',
+    modelSelectTip: '选择已注册并可以用于在线推理的模型。',
+    selectModel: '选择模型',
+    accessProtocol: '访问协议',
+    port: '服务端口号',
+    portTip: '服务对外提供访问的端口号。',
+    apiTip: '兼容 OpenAI 协议的推理接口路径。',
+    serviceSettings: '服务设置',
+    multiInferenceService: '多推理服务',
+    multiEndpointTip: '开启后仅支持标准推理下的单实例和单节点部署形态。',
+    operation: '操作',
+    deleteServiceGroup: '删除此服务组',
+    add: '添加',
+    endpointRemain: '您还可以添加 {count} 个端口映射',
+    apiAuth: 'API Key 鉴权',
+    apiAuthTip: '开启后，请求方需要在 Header 中携带有效的 API Key 才能访问当前推理服务。',
+    multimodal: '多模态',
+    description: '描述',
+    enter: '请输入',
+    deploymentStrategy: '部署策略',
+    serviceScenario: '服务场景',
+    standardInference: '标准推理',
+    grayscaleRelease: '灰度发布',
+    cluster: '集群',
+    selectCluster: '选择集群',
+    selectClusterPlaceholder: '请选择集群',
+    clusterResource: '集群资源',
+    clusterOverview: '节点资源实时概览',
+    refreshResource: '刷新资源',
+    memory: '内存',
+    nodeResource: '节点资源',
+    searchNode: '搜索节点名称',
+    nodeName: '节点名称',
+    cpuAvailableTotal: 'CPU（可用 / 总量）',
+    memoryAvailableTotal: '内存（可用 / 总量）',
+    node: '节点',
+    selectNode: '请选择部署节点（可选）',
+    instanceCount: '实例数量',
+    resourceSpec: '资源规格',
+    resourceSpecName: '资源规格-{index}',
+    addResourceSpec: '添加资源规格',
+    resourceSpecRemain: '还可以添加 {count} 条资源规格',
+    schedulerType: '调度器类型',
+    schedulerPolicy: '调度策略',
+    resourceBalance: '资源均衡',
+    searchResourceSpec: '搜索资源规格',
+    runtimeParameters: '运行参数',
+    runtimeParametersDesc: '参数作用于当前选中的资源规格。',
+    copyConfig: '复制配置信息',
+    config: '配置',
+    advancedConfig: '高级配置',
+    highPerformanceRouting: '高性能路由',
+    scaling: '扩缩容',
+    nodeAffinity: '节点亲和性',
+    fileMount: '文件管理挂载',
+    custom: '自定义',
+    customJsonPlaceholder: '请输入自定义 JSON 参数',
+    baseConfig: '基本配置',
+    localAcceleration: '模型本地加速',
+    multiEnabled: '开启（{count} 组）',
+    inferenceConfig: '推理配置',
+    autoSchedule: '自动调度',
+    createOnlineService: '创建在线服务',
+    back: '返回',
+    stepBasic: '基本配置',
+    stepBasicDesc: '服务与模型',
+    stepInference: '推理配置',
+    stepInferenceDesc: '资源与调度',
+    stepParameter: '参数配置',
+    stepParameterDesc: '运行参数',
+    stepConfirm: '确认信息',
+    stepConfirmDesc: '核对并创建',
+    cancel: '取消',
+    previous: '上一步',
+    next: '下一步',
+    confirmCreate: '确认创建',
+    createSuccess: '在线服务已进入创建队列',
+    acceleratorConfig: '加速卡配置',
+    ok: '确定',
+    useMode: '使用模式',
+    passthrough: '直通',
+    compute: '算力',
+    vram: '显存',
+    vramExtra: '支持1MiB的整数倍切分',
+    scheduleMode: '调度方式',
+    density: '密度',
+    performance: '性能',
+    partitionMode: '划分模式',
+    partitionTip: '按业务弹性需求选择加速卡切分策略。',
+    elastic: '弹性',
+    fixed: '固定',
+    exclusive: '独占',
+    acceleratorUpdated: '加速卡配置已更新',
+    searchModel: '搜索模型名称',
+    modelType: '模型类型',
+    modelCount: '模型（{count}）',
+    owner: '创建人',
+    modelEmpty: '当前类型暂无模型',
+    versionCount: '版本（{count}）',
+    selected: '已选：1 / 1',
+    searchCluster: '请输入集群名称搜索',
+    clusterName: '集群名称',
+    cpuAllocatedTotal: 'CPU（已分配 / 总数）',
+    memoryAllocatedTotal: '内存（已分配 / 总数）',
+    clusterTotal: '共 {count} 个集群',
+    validators: {
+      serviceName: '请输入服务名称',
+      accelerator: '请选择加速卡',
+      mode: '请选择使用模式',
+      compute: '请输入算力',
+      vram: '请输入显存',
+      schedule: '请选择调度方式',
+      partition: '请选择划分模式',
+    },
+  },
+  en: {
+    detail: 'Details',
+    enabled: 'Enabled',
+    disabled: 'Off',
+    on: 'On',
+    systemDefault: 'System Default',
+    sequence: 'No.',
+    inferenceEngine: 'Inference Engine',
+    accelerator: 'Accelerator',
+    cpuCores: 'CPU (Cores)',
+    memoryGib: 'Memory (GiB)',
+    sharedMemoryGib: 'Shared Memory (GiB)',
+    nodeCount: 'Nodes',
+    parameterConfig: 'Parameter Configuration',
+    inputToken: 'Max Input Tokens',
+    outputToken: 'Max Output Tokens',
+    batchToken: 'Max Batched Tokens',
+    remoteCode: 'Remote Code Loading',
+    property: 'Property',
+    type: 'Type',
+    operator: 'Operator',
+    value: 'Value',
+    nodeLabel: 'Node Label',
+    acceleratorLabel: 'Accelerator Label',
+    configure: 'Configure',
+    serviceInfo: 'Service Information',
+    serviceName: 'Service Name',
+    enterServiceName: 'Enter service name',
+    modelSelect: 'Model Selection',
+    modelSelectTip: 'Select a registered model that can be used for online inference.',
+    selectModel: 'Select Model',
+    accessProtocol: 'Access Protocol',
+    port: 'Service Port',
+    portTip: 'The external port exposed by the service.',
+    apiTip: 'Inference endpoint path compatible with the OpenAI protocol.',
+    serviceSettings: 'Service Settings',
+    multiInferenceService: 'Multiple Inference Services',
+    multiEndpointTip: 'After enabled, only single-instance and single-node deployment are supported for standard inference.',
+    operation: 'Operation',
+    deleteServiceGroup: 'Delete this service group',
+    add: 'Add',
+    endpointRemain: 'You can add {count} more port mappings',
+    apiAuth: 'API Key Authentication',
+    apiAuthTip: 'After enabled, callers must include a valid API Key in the header to access this inference service.',
+    multimodal: 'Multimodal',
+    description: 'Description',
+    enter: 'Enter',
+    deploymentStrategy: 'Deployment Strategy',
+    serviceScenario: 'Service Scenario',
+    standardInference: 'Standard Inference',
+    grayscaleRelease: 'Canary Release',
+    cluster: 'Cluster',
+    selectCluster: 'Select Cluster',
+    selectClusterPlaceholder: 'Select a cluster',
+    clusterResource: 'Cluster Resources',
+    clusterOverview: 'Real-time node resource overview',
+    refreshResource: 'Refresh resources',
+    memory: 'Memory',
+    nodeResource: 'Node Resources',
+    searchNode: 'Search node name',
+    nodeName: 'Node Name',
+    cpuAvailableTotal: 'CPU (Available / Total)',
+    memoryAvailableTotal: 'Memory (Available / Total)',
+    node: 'Node',
+    selectNode: 'Select deployment node (optional)',
+    instanceCount: 'Instances',
+    resourceSpec: 'Resource Specifications',
+    resourceSpecName: 'Resource Spec {index}',
+    addResourceSpec: 'Add Resource Spec',
+    resourceSpecRemain: '{count} more resource specs can be added',
+    schedulerType: 'Scheduler Type',
+    schedulerPolicy: 'Scheduling Policy',
+    resourceBalance: 'Resource Balanced',
+    searchResourceSpec: 'Search resource specs',
+    runtimeParameters: 'Runtime Parameters',
+    runtimeParametersDesc: 'Parameters apply to the currently selected resource spec.',
+    copyConfig: 'Copy Configuration',
+    config: 'Configuration',
+    advancedConfig: 'Advanced Configuration',
+    highPerformanceRouting: 'High-performance Routing',
+    scaling: 'Auto Scaling',
+    nodeAffinity: 'Node Affinity',
+    fileMount: 'File Management Mount',
+    custom: 'Custom',
+    customJsonPlaceholder: 'Enter custom JSON parameters',
+    baseConfig: 'Basic Configuration',
+    localAcceleration: 'Model Local Acceleration',
+    multiEnabled: 'On ({count} groups)',
+    inferenceConfig: 'Inference Configuration',
+    autoSchedule: 'Auto Scheduling',
+    createOnlineService: 'Create Online Service',
+    back: 'Back',
+    stepBasic: 'Basic Configuration',
+    stepBasicDesc: 'Service and model',
+    stepInference: 'Inference Configuration',
+    stepInferenceDesc: 'Resources and scheduling',
+    stepParameter: 'Parameter Configuration',
+    stepParameterDesc: 'Runtime parameters',
+    stepConfirm: 'Confirm Information',
+    stepConfirmDesc: 'Review and create',
+    cancel: 'Cancel',
+    previous: 'Previous',
+    next: 'Next',
+    confirmCreate: 'Confirm Create',
+    createSuccess: 'Online service has entered the creation queue',
+    acceleratorConfig: 'Accelerator Configuration',
+    ok: 'OK',
+    useMode: 'Usage Mode',
+    passthrough: 'Passthrough',
+    compute: 'Compute',
+    vram: 'VRAM',
+    vramExtra: 'Supports partitioning by integer multiples of 1 MiB',
+    scheduleMode: 'Scheduling Mode',
+    density: 'Density',
+    performance: 'Performance',
+    partitionMode: 'Partition Mode',
+    partitionTip: 'Select an accelerator partition policy based on elastic business needs.',
+    elastic: 'Elastic',
+    fixed: 'Fixed',
+    exclusive: 'Exclusive',
+    acceleratorUpdated: 'Accelerator configuration updated',
+    searchModel: 'Search model name',
+    modelType: 'Model Type',
+    modelCount: 'Models ({count})',
+    owner: 'Owner',
+    modelEmpty: 'No models are available for this type',
+    versionCount: 'Versions ({count})',
+    selected: 'Selected: 1 / 1',
+    searchCluster: 'Search cluster name',
+    clusterName: 'Cluster Name',
+    cpuAllocatedTotal: 'CPU (Allocated / Total)',
+    memoryAllocatedTotal: 'Memory (Allocated / Total)',
+    clusterTotal: '{count} clusters in total',
+    validators: {
+      serviceName: 'Enter service name',
+      accelerator: 'Select an accelerator',
+      mode: 'Select a usage mode',
+      compute: 'Enter compute',
+      vram: 'Enter VRAM',
+      schedule: 'Select a scheduling mode',
+      partition: 'Select a partition mode',
+    },
+  },
+} as const;
+
+type OnlineText = typeof onlineText.zh;
+
+const providerEn: Record<string, string> = {
+  通义实验室: 'Tongyi Lab',
+  深度求索: 'DeepSeek',
+  自定义: 'Custom',
+  智源研究院: 'BAAI',
+  百度: 'Baidu',
+  模型广场: 'Model Gallery',
+  共享模型: 'Shared Models',
+  平台: 'Platform',
+  模型团队: 'Model Team',
+};
+
+const modelDescriptionEn: Record<string, string> = {
+  'Qwen3-32B': 'A general-purpose language model balancing reasoning quality and deployment efficiency',
+  'DeepSeek-V4-Flash-w8a8': 'A lightweight model for high-throughput inference scenarios',
+  'DeepSeek-V3': 'A general-purpose foundation model released by DeepSeek',
+  'DeepSeek-R1': 'Enhanced reasoning for complex logic, math, and coding tasks',
+  test: 'A text generation model for testing online inference flows',
+  'nieqi-test': 'Internal validation model',
+  'bge-m3-2': 'Multilingual semantic embedding model',
+  'qwen1-5b': 'Lightweight general-purpose text generation model',
+  'ERNIE Lite': 'Lightweight text generation model for low-latency online services',
+  ResNet50: 'General image classification model',
+  YOLOv8: 'Real-time object detection model',
+  'BGE-Large-ZH': 'Chinese text embedding model',
+  'BGE-Reranker': 'Text relevance reranking model',
+  'Qwen2-VL': 'Multimodal model for image-text understanding',
+};
+
+const formatResourceText = (locale: Locale, value: string) => {
+  if (locale === 'zh') return value;
+  return value
+    .replace('英伟达 RTX PRO 5000 × 1', 'NVIDIA RTX PRO 5000 x 1')
+    .replace('昇腾 / Ascend 910B', 'Ascend 910B')
+    .replace('昇腾 / Ascend910B', 'Ascend 910B')
+    .replace('沐曦 MXC500 × 1', 'MetaX MXC500 x 1')
+    .replace(/ 核/g, ' cores')
+    .replace(/ 张/g, ' cards');
+};
+
+function InferenceParametersPopover({ text }: { text: OnlineText }) {
   return (
     <div className="config-popover parameter-summary-popover">
       <Descriptions
@@ -135,17 +467,17 @@ function InferenceParametersPopover() {
         colon={false}
         column={1}
         items={[
-          { key: 'input', label: '最大输入 Token', children: '2048' },
-          { key: 'output', label: '最大输出 Token', children: '2048' },
-          { key: 'batch', label: '批处理 Token 上限', children: '系统默认' },
-          { key: 'code', label: '远程代码加载', children: <StatusBadge status="success" text="开启" /> },
+          { key: 'input', label: text.inputToken, children: '2048' },
+          { key: 'output', label: text.outputToken, children: '2048' },
+          { key: 'batch', label: text.batchToken, children: text.systemDefault },
+          { key: 'code', label: text.remoteCode, children: <StatusBadge status="success" text={text.on} /> },
         ]}
       />
     </div>
   );
 }
 
-function AffinityRulesPopover() {
+function AffinityRulesPopover({ locale, text }: { locale: Locale; text: OnlineText }) {
   return (
     <div className="config-popover affinity-popover">
       <Table
@@ -155,10 +487,10 @@ function AffinityRulesPopover() {
         pagination={false}
         scroll={{ x: 640, y: 220 }}
         columns={[
-          { title: '属性', dataIndex: 'property', width: 250 },
-          { title: '类型', dataIndex: 'type', width: 130 },
-          { title: '操作符', dataIndex: 'operator', width: 100 },
-          { title: '取值', dataIndex: 'value', width: 140 },
+          { title: text.property, dataIndex: 'property', width: 250 },
+          { title: text.type, dataIndex: 'type', width: 130, render: (value) => locale === 'en' ? (value === '节点标签' ? text.nodeLabel : text.acceleratorLabel) : value },
+          { title: text.operator, dataIndex: 'operator', width: 100 },
+          { title: text.value, dataIndex: 'value', width: 140 },
         ]}
       />
     </div>
@@ -179,11 +511,13 @@ function NumberField({ value, min = 0 }: { value: number; min?: number }) {
 }
 
 type OnlineServicePageProps = {
+  locale?: Locale;
   onOpenContainerCreate?: () => void;
 };
 
-export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePageProps) {
+export function OnlineServicePage({ locale = 'zh', onOpenContainerCreate }: OnlineServicePageProps) {
   const { message } = App.useApp();
+  const text = onlineText[locale];
   const [form] = Form.useForm();
   const [acceleratorForm] = Form.useForm();
   const [current, setCurrent] = useState(0);
@@ -219,6 +553,9 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
   const activeDraftModel = models.find((item) => item.name === draftModel);
   const filteredClusters = useMemo(() => clusters.filter((item) => `${item.name}${item.ip}`.toLowerCase().includes(clusterSearch.toLowerCase())), [clusterSearch]);
   const filteredNodes = useMemo(() => nodes.filter((item) => item.name.toLowerCase().includes(nodeSearch.trim().toLowerCase())), [nodeSearch]);
+  const format = (value: string) => formatResourceText(locale, value);
+  const providerName = (value: string) => locale === 'en' ? providerEn[value] ?? value : value;
+  const modelDescription = (item: ModelItem) => locale === 'en' ? modelDescriptionEn[item.name] ?? item.description : item.description;
 
   const selectModelTab = (key: string) => {
     const nextType = key === 'mine' ? 'text' : key === 'shared' ? 'embedding' : 'image-classification';
@@ -255,30 +592,30 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
   };
 
   const resourceColumns: TableColumnsType<ResourceSpec> = [
-    { title: '序号', width: 64, render: (_value, _record, index) => index + 1 },
-    { title: '推理引擎', dataIndex: 'engine', width: 220, render: (value) => <Select defaultValue={value} options={[{ value: 'vLLM 0.8.10' }, { value: 'MindIE 2.0' }]} /> },
+    { title: text.sequence, width: 64, render: (_value, _record, index) => index + 1 },
+    { title: text.inferenceEngine, dataIndex: 'engine', width: 220, render: (value) => <Select defaultValue={value} options={[{ value: 'vLLM 0.8.10' }, { value: 'MindIE 2.0' }]} /> },
     {
-      title: '加速卡',
+      title: text.accelerator,
       dataIndex: 'accelerator',
       width: 240,
       render: (value, record) => (
         <Space size={6} wrap>
           <Badge status="success" />
-          <span>{value}</span>
-          <Button type="link" size="small" onClick={() => openAcceleratorConfig(record)}>配置</Button>
+          <span>{format(value)}</span>
+          <Button type="link" size="small" onClick={() => openAcceleratorConfig(record)}>{text.configure}</Button>
         </Space>
       ),
     },
-    { title: 'CPU（核）', dataIndex: 'cpu', width: 140, render: (value) => <NumberField value={value} min={1} /> },
-    { title: '内存（GiB）', dataIndex: 'memory', width: 150, render: (value) => <NumberField value={value} min={1} /> },
-    { title: '共享内存（GiB）', dataIndex: 'sharedMemory', width: 170, render: (value) => <NumberField value={value} /> },
-    { title: '节点数量', dataIndex: 'nodes', width: 130, render: (value) => <NumberField value={value} min={1} /> },
+    { title: text.cpuCores, dataIndex: 'cpu', width: 140, render: (value) => <NumberField value={value} min={1} /> },
+    { title: text.memoryGib, dataIndex: 'memory', width: 150, render: (value) => <NumberField value={value} min={1} /> },
+    { title: text.sharedMemoryGib, dataIndex: 'sharedMemory', width: 170, render: (value) => <NumberField value={value} /> },
+    { title: text.nodeCount, dataIndex: 'nodes', width: 130, render: (value) => <NumberField value={value} min={1} /> },
   ];
 
   const modelTabs: TabsProps['items'] = [
-    { key: 'mine', label: '我的模型' },
-    { key: 'shared', label: '共享的模型' },
-    { key: 'market', label: '模型广场' },
+    { key: 'mine', label: locale === 'en' ? 'My Models' : '我的模型' },
+    { key: 'shared', label: locale === 'en' ? 'Shared Models' : '共享的模型' },
+    { key: 'market', label: locale === 'en' ? 'Model Gallery' : '模型广场' },
   ];
 
   const nextStep = async () => {
@@ -289,58 +626,58 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
   const serviceInfo = (
     <div className="section-stack">
       <section className="form-section">
-        <h2>服务信息</h2>
-        <Form.Item name="serviceName" label="服务名称" rules={[{ required: true, message: '请输入服务名称' }]}>
-          <Input placeholder="请输入服务名称" maxLength={64} showCount />
+        <h2>{text.serviceInfo}</h2>
+        <Form.Item name="serviceName" label={text.serviceName} rules={[{ required: true, message: text.validators.serviceName }]}>
+          <Input placeholder={text.enterServiceName} maxLength={64} showCount />
         </Form.Item>
-        <Form.Item label={<FieldHelp tip="选择已注册并可以用于在线推理的模型。">模型选择</FieldHelp>} required>
+        <Form.Item label={<FieldHelp tip={text.modelSelectTip}>{text.modelSelect}</FieldHelp>} required>
           <Space.Compact className="full">
             <Input value={`${selectedModel} / ${selectedVersion}`} readOnly />
             <Button onClick={() => {
               setDraftModel(selectedModel);
               setDraftVersion(selectedVersion);
               setModelOpen(true);
-            }}>选择模型</Button>
+            }}>{text.selectModel}</Button>
           </Space.Compact>
         </Form.Item>
-        <Form.Item name="protocol" label="访问协议" initialValue="HTTPS">
+        <Form.Item name="protocol" label={text.accessProtocol} initialValue="HTTPS">
           <Radio.Group options={['HTTPS', 'HTTP']} />
         </Form.Item>
-        <Form.Item name="port" label={<FieldHelp tip="服务对外提供访问的端口号。">服务端口号</FieldHelp>} initialValue={18000} rules={[{ required: true }]}>
+        <Form.Item name="port" label={<FieldHelp tip={text.portTip}>{text.port}</FieldHelp>} initialValue={18000} rules={[{ required: true }]}>
           <SpinnerNumberInput min={1} max={65535} />
         </Form.Item>
-        <Form.Item name="api" label={<FieldHelp tip="兼容 OpenAI 协议的推理接口路径。">API</FieldHelp>} initialValue="/v1/chat/completions" rules={[{ required: true }]}>
+        <Form.Item name="api" label={<FieldHelp tip={text.apiTip}>API</FieldHelp>} initialValue="/v1/chat/completions" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
       </section>
 
       <section className="form-section service-settings">
-        <h2>服务设置</h2>
+        <h2>{text.serviceSettings}</h2>
         <div className="setting-row">
-          <Typography.Text>多推理服务</Typography.Text>
+          <Typography.Text>{text.multiInferenceService}</Typography.Text>
           <div className="setting-control">
             <Space>
               <Switch checked={multiEndpoint} onChange={setMultiEndpoint} />
-              <Typography.Text type="secondary">开启后仅支持标准推理下的单实例和单节点部署形态。</Typography.Text>
+              <Typography.Text type="secondary">{text.multiEndpointTip}</Typography.Text>
             </Space>
             {multiEndpoint ? (
               <div className="endpoint-panel">
                 {endpoints.map((item, index) => (
                   <div className={`endpoint-row${index > 0 ? ' is-unlabeled' : ''}`} key={item.id}>
-                    <Form.Item label={index === 0 ? '服务端口号' : undefined}>
+                    <Form.Item label={index === 0 ? text.port : undefined}>
                       <SpinnerNumberInput min={1} max={65535} value={item.port} onChange={(value) => setEndpoints((items) => items.map((next) => next.id === item.id ? { ...next, port: value ?? undefined } : next))} />
                     </Form.Item>
                     <Form.Item label={index === 0 ? 'API' : undefined}>
                       <Input value={item.api} onChange={(event) => setEndpoints((items) => items.map((next) => next.id === item.id ? { ...next, api: event.target.value } : next))} />
                     </Form.Item>
                     <div className="endpoint-operation">
-                      {index === 0 && <Typography.Text className="endpoint-operation-label">操作</Typography.Text>}
+                      {index === 0 && <Typography.Text className="endpoint-operation-label">{text.operation}</Typography.Text>}
                       <div className="endpoint-operation-controls">
                         <Switch size="small" checked={item.enabled} onChange={(value) => setEndpoints((items) => items.map((next) => next.id === item.id ? { ...next, enabled: value } : next))} />
                         {endpoints.length > 1 && (
-                          <Tooltip title="删除此服务组">
+                          <Tooltip title={text.deleteServiceGroup}>
                             <Button
-                              aria-label={`删除服务组 ${index + 1}`}
+                              aria-label={`${text.deleteServiceGroup} ${index + 1}`}
                               type="text"
                               danger
                               icon={<DeleteOutlined />}
@@ -359,25 +696,25 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
                     disabled={endpoints.length >= 28}
                     onClick={() => setEndpoints((items) => [...items, { id: Math.max(0, ...items.map((item) => item.id)) + 1, port: 18000, api: '/v1/chat/completions', enabled: true }])}
                   >
-                    添加
+                    {text.add}
                   </Button>
-                  <Typography.Text type="secondary">您还可以添加 {28 - endpoints.length} 个端口映射</Typography.Text>
+                  <Typography.Text type="secondary">{text.endpointRemain.replace('{count}', String(28 - endpoints.length))}</Typography.Text>
                 </Space>
               </div>
             ) : null}
           </div>
         </div>
         <div className="setting-row">
-          <FieldHelp tip="开启后，请求方需要在 Header 中携带有效的 API Key 才能访问当前推理服务。">API Key 鉴权</FieldHelp>
+          <FieldHelp tip={text.apiAuthTip}>{text.apiAuth}</FieldHelp>
           <Switch checked={apiAuth} onChange={setApiAuth} />
         </div>
         <div className="setting-row">
-          <Typography.Text>多模态</Typography.Text>
+          <Typography.Text>{text.multimodal}</Typography.Text>
           <Switch checked={multimodal} onChange={setMultimodal} />
         </div>
         <div className="setting-row setting-description">
-          <Typography.Text>描述</Typography.Text>
-          <Input.TextArea value={description} onChange={(event) => setDescription(event.target.value)} maxLength={200} showCount rows={3} placeholder="请输入" />
+          <Typography.Text>{text.description}</Typography.Text>
+          <Input.TextArea value={description} onChange={(event) => setDescription(event.target.value)} maxLength={200} showCount rows={3} placeholder={text.enter} />
         </div>
       </section>
     </div>
@@ -387,14 +724,21 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
     <div className="section-stack">
       <section className="form-section">
         <div className="section-head">
-          <h2>部署策略</h2>
+          <h2>{text.deploymentStrategy}</h2>
         </div>
-        <Form.Item label="服务场景" required>
-          <Select options={['标准推理', 'SmartPD', '灰度发布'].map((value) => ({ value }))} defaultValue="标准推理" />
+        <Form.Item label={text.serviceScenario} required>
+          <Select
+            options={[
+              { value: '标准推理', label: text.standardInference },
+              { value: 'SmartPD', label: 'SmartPD' },
+              { value: '灰度发布', label: text.grayscaleRelease },
+            ]}
+            defaultValue="标准推理"
+          />
         </Form.Item>
-        <Form.Item label="集群" required>
+        <Form.Item label={text.cluster} required>
           <Space.Compact className="full">
-            <Input value={clusters.find((item) => item.key === selectedCluster)?.name ?? ''} placeholder="请选择集群" readOnly />
+            <Input value={clusters.find((item) => item.key === selectedCluster)?.name ?? ''} placeholder={text.selectClusterPlaceholder} readOnly />
             <Button
               icon={<SearchOutlined />}
               onClick={() => {
@@ -402,7 +746,7 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
                 setClusterOpen(true);
               }}
             >
-              选择集群
+              {text.selectCluster}
             </Button>
           </Space.Compact>
         </Form.Item>
@@ -410,32 +754,32 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
           <div className="cluster-inline-panel">
             <div className="cluster-inline-head">
               <div>
-                <Typography.Text strong>集群资源</Typography.Text>
-                <Typography.Text type="secondary">{clusters.find((item) => item.key === selectedCluster)?.name} · 节点资源实时概览</Typography.Text>
+                <Typography.Text strong>{text.clusterResource}</Typography.Text>
+                <Typography.Text type="secondary">{clusters.find((item) => item.key === selectedCluster)?.name} · {text.clusterOverview}</Typography.Text>
               </div>
-              <Tooltip title="刷新资源"><Button type="text" icon={<ReloadOutlined />} /></Tooltip>
+              <Tooltip title={text.refreshResource}><Button type="text" icon={<ReloadOutlined />} /></Tooltip>
             </div>
             <div className="cluster-metrics compact">
-              <Card size="small"><b>CPU</b><span>293.50 / 384.00 核</span><Progress percent={76} showInfo={false} /></Card>
-              <Card size="small"><b>内存</b><span>1460.98 / 1949.69 GiB</span><Progress percent={75} showInfo={false} /></Card>
+              <Card size="small"><b>CPU</b><span>{format('293.50 / 384.00 核')}</span><Progress percent={76} showInfo={false} /></Card>
+              <Card size="small"><b>{text.memory}</b><span>1460.98 / 1949.69 GiB</span><Progress percent={75} showInfo={false} /></Card>
               <Card size="small" className="accelerator-metric-card">
                 <div className="accelerator-metric-row">
-                  <b><ThunderboltOutlined /> 加速卡</b>
+                  <b><ThunderboltOutlined /> {text.accelerator}</b>
                   <div className="accelerator-metric-value">
                     <Select className="accelerator-selector" size="small" value={accelerator} onChange={setAccelerator} options={[
-                      { value: 'nvidia', label: '英伟达' },
-                      { value: 'ascend', label: '昇腾' },
-                      { value: 'metax', label: '沐曦' },
+                      { value: 'nvidia', label: locale === 'en' ? 'NVIDIA' : '英伟达' },
+                      { value: 'ascend', label: locale === 'en' ? 'Ascend' : '昇腾' },
+                      { value: 'metax', label: locale === 'en' ? 'MetaX' : '沐曦' },
                     ]} />
-                    <span>1 / 4 张</span>
+                    <span>{locale === 'en' ? '1 / 4 cards' : '1 / 4 张'}</span>
                   </div>
                 </div>
                 <Progress percent={25} showInfo={false} />
               </Card>
             </div>
             <div className="cluster-node-toolbar">
-              <Typography.Text strong>节点资源</Typography.Text>
-              <Input prefix={<SearchOutlined />} value={nodeSearch} onChange={(event) => setNodeSearch(event.target.value)} placeholder="搜索节点名称" allowClear />
+              <Typography.Text strong>{text.nodeResource}</Typography.Text>
+              <Input prefix={<SearchOutlined />} value={nodeSearch} onChange={(event) => setNodeSearch(event.target.value)} placeholder={text.searchNode} allowClear />
             </div>
             <div className="cluster-node-scroll">
               <Table
@@ -450,33 +794,33 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
                 })}
                 rowClassName={onOpenContainerCreate ? 'clickable-table-row' : ''}
                 columns={[
-                  { title: '节点名称', dataIndex: 'name', width: 140 },
-                  { title: 'CPU（可用 / 总量）', dataIndex: 'cpu', width: 190 },
-                  { title: '内存（可用 / 总量）', dataIndex: 'memory', width: 220 },
-                  { title: '加速卡', dataIndex: 'accelerator', width: 210 },
+                  { title: text.nodeName, dataIndex: 'name', width: 140 },
+                  { title: text.cpuAvailableTotal, dataIndex: 'cpu', width: 190, render: (value) => format(value) },
+                  { title: text.memoryAvailableTotal, dataIndex: 'memory', width: 220 },
+                  { title: text.accelerator, dataIndex: 'accelerator', width: 210, render: (value) => format(value) },
                 ]}
               />
             </div>
           </div>
         ) : null}
-        <Form.Item label="节点">
-          <Select allowClear placeholder="请选择部署节点（可选）" options={nodes.map((item) => ({ value: item.key, label: item.name }))} />
+        <Form.Item label={text.node}>
+          <Select allowClear placeholder={text.selectNode} options={nodes.map((item) => ({ value: item.key, label: item.name }))} />
         </Form.Item>
-        <Form.Item label="实例数量">
+        <Form.Item label={text.instanceCount}>
           <SpinnerNumberInput min={1} defaultValue={1} />
         </Form.Item>
       </section>
 
       <section className="form-section table-section">
-        <h2>资源规格</h2>
+        <h2>{text.resourceSpec}</h2>
         <Table size="middle" rowKey="key" columns={resourceColumns} dataSource={resourceSpecs} pagination={false} scroll={{ x: 1120 }} />
         <Space className="add-row">
-          <Button type="link" icon={<PlusOutlined />} onClick={() => setResourceSpecs((items) => [...items, { ...baseSpec, key: String(items.length + 1) }])}>添加资源规格</Button>
-          <Typography.Text type="secondary">还可以添加 {64 - resourceSpecs.length} 条资源规格</Typography.Text>
+          <Button type="link" icon={<PlusOutlined />} onClick={() => setResourceSpecs((items) => [...items, { ...baseSpec, key: String(items.length + 1) }])}>{text.addResourceSpec}</Button>
+          <Typography.Text type="secondary">{text.resourceSpecRemain.replace('{count}', String(64 - resourceSpecs.length))}</Typography.Text>
         </Space>
         <Descriptions colon={false} column={2} items={[
-          { key: 'scheduler', label: '调度器类型', children: 'xxl-engine-scheduler' },
-          { key: 'strategy', label: '调度策略', children: <Tag color="blue">资源均衡</Tag> },
+          { key: 'scheduler', label: text.schedulerType, children: 'xxl-engine-scheduler' },
+          { key: 'strategy', label: text.schedulerPolicy, children: <Tag color="blue">{text.resourceBalance}</Tag> },
         ]} />
       </section>
     </div>
@@ -485,13 +829,13 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
   const parameterConfig = (
     <div className="parameter-layout">
       <aside className="resource-list">
-        <Input prefix={<SearchOutlined />} placeholder="搜索资源规格" />
+        <Input prefix={<SearchOutlined />} placeholder={text.searchResourceSpec} />
         {resourceSpecs.map((item, index) => (
           <Card size="small" className={`resource-card ${index === 0 ? 'active' : ''}`} key={item.key}>
-            <Typography.Text strong>资源规格-{index + 1}</Typography.Text>
+            <Typography.Text strong>{text.resourceSpecName.replace('{index}', String(index + 1))}</Typography.Text>
             <Descriptions colon={false} size="small" column={1} items={[
-              { key: 'engine', label: '推理引擎', children: item.engine },
-              { key: 'accelerator', label: '加速卡', children: item.accelerator },
+              { key: 'engine', label: text.inferenceEngine, children: item.engine },
+              { key: 'accelerator', label: text.accelerator, children: format(item.accelerator) },
             ]} />
           </Card>
         ))}
@@ -499,20 +843,20 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
       <section className="form-section parameter-form">
         <div className="section-head">
           <div>
-            <h2>运行参数</h2>
-            <Typography.Text type="secondary">参数作用于当前选中的资源规格。</Typography.Text>
+            <h2>{text.runtimeParameters}</h2>
+            <Typography.Text type="secondary">{text.runtimeParametersDesc}</Typography.Text>
           </div>
-          <Button icon={<CopyOutlined />}>复制配置信息</Button>
+          <Button icon={<CopyOutlined />}>{text.copyConfig}</Button>
         </div>
         <Tabs
           defaultActiveKey="config"
           items={[
             {
               key: 'config',
-              label: '配置',
+              label: text.config,
               children: (
                 <div className="parameter-grid">
-                  <Form.Item label={<FieldHelp tip="允许加载模型仓库中的自定义远程代码。">trust-remote-code</FieldHelp>}><Switch defaultChecked /></Form.Item>
+                  <Form.Item label={<FieldHelp tip={locale === 'en' ? 'Allow custom remote code from the model repository to be loaded.' : '允许加载模型仓库中的自定义远程代码。'}>trust-remote-code</FieldHelp>}><Switch defaultChecked /></Form.Item>
                   <Form.Item label="max-input-token-len"><NumberField value={2048} /></Form.Item>
                   <Form.Item label="max-output-token-len"><NumberField value={2048} /></Form.Item>
                   <Form.Item label="max-num-batched-tokens"><NumberField value={0} /></Form.Item>
@@ -522,13 +866,13 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
                     ghost
                     items={[{
                       key: 'advanced',
-                      label: '高级配置',
+                      label: text.advancedConfig,
                       children: (
                         <div className="advanced-grid">
-                          <Form.Item label="高性能路由"><Switch defaultChecked /></Form.Item>
-                          <Form.Item label="扩缩容"><Switch /></Form.Item>
-                          <Form.Item label="节点亲和性"><Switch checked={affinity} onChange={setAffinity} /></Form.Item>
-                          <Form.Item label="文件管理挂载"><Switch /></Form.Item>
+                          <Form.Item label={text.highPerformanceRouting}><Switch defaultChecked /></Form.Item>
+                          <Form.Item label={text.scaling}><Switch /></Form.Item>
+                          <Form.Item label={text.nodeAffinity}><Switch checked={affinity} onChange={setAffinity} /></Form.Item>
+                          <Form.Item label={text.fileMount}><Switch /></Form.Item>
                         </div>
                       ),
                     }]}
@@ -536,7 +880,7 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
                 </div>
               ),
             },
-            { key: 'custom', label: '自定义', children: <Input.TextArea rows={12} placeholder="请输入自定义 JSON 参数" /> },
+            { key: 'custom', label: text.custom, children: <Input.TextArea rows={12} placeholder={text.customJsonPlaceholder} /> },
           ]}
         />
       </section>
@@ -546,25 +890,25 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
   const confirmInfo = (
     <div className="section-stack">
       <section className="form-section">
-        <h2>基本配置</h2>
+        <h2>{text.baseConfig}</h2>
         <Descriptions colon={false} column={4} items={[
-          { key: 'name', label: '服务名称', children: form.getFieldValue('serviceName') || 'Qwen3-32B 在线服务' },
-          { key: 'model', label: '模型选择', children: `${selectedModel} / ${selectedVersion}` },
-          { key: 'local', label: '模型本地加速', children: <StatusBadge status="success" text="启用" /> },
-          { key: 'protocol', label: '访问协议', children: form.getFieldValue('protocol') || 'HTTPS' },
-          { key: 'port', label: '服务端口号', children: form.getFieldValue('port') || 18000 },
+          { key: 'name', label: text.serviceName, children: form.getFieldValue('serviceName') || (locale === 'en' ? 'Qwen3-32B Online Service' : 'Qwen3-32B 在线服务') },
+          { key: 'model', label: text.modelSelect, children: `${selectedModel} / ${selectedVersion}` },
+          { key: 'local', label: text.localAcceleration, children: <StatusBadge status="success" text={text.enabled} /> },
+          { key: 'protocol', label: text.accessProtocol, children: form.getFieldValue('protocol') || 'HTTPS' },
+          { key: 'port', label: text.port, children: form.getFieldValue('port') || 18000 },
           { key: 'api', label: 'API', children: form.getFieldValue('api') || '/v1/chat/completions' },
-          { key: 'multi', label: '多推理服务', children: multiEndpoint ? `开启（${endpoints.length} 组）` : '关闭' },
-          { key: 'auth', label: 'API Key 鉴权', children: apiAuth ? '开启' : '关闭' },
+          { key: 'multi', label: text.multiInferenceService, children: multiEndpoint ? text.multiEnabled.replace('{count}', String(endpoints.length)) : text.disabled },
+          { key: 'auth', label: text.apiAuth, children: apiAuth ? text.on : text.disabled },
         ]} />
       </section>
       <section className="form-section table-section">
-        <h2>推理配置</h2>
+        <h2>{text.inferenceConfig}</h2>
         <Descriptions colon={false} column={4} items={[
-          { key: 'scene', label: '服务场景', children: '标准推理' },
-          { key: 'cluster', label: '集群', children: clusters.find((item) => item.key === selectedCluster)?.name || 'yigou_base_user_' },
-          { key: 'node', label: '节点', children: '自动调度' },
-          { key: 'instance', label: '实例数量', children: 1 },
+          { key: 'scene', label: text.serviceScenario, children: text.standardInference },
+          { key: 'cluster', label: text.cluster, children: clusters.find((item) => item.key === selectedCluster)?.name || 'yigou_base_user_' },
+          { key: 'node', label: text.node, children: text.autoSchedule },
+          { key: 'instance', label: text.instanceCount, children: 1 },
         ]} />
         <Table
           size="middle"
@@ -573,24 +917,24 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
           pagination={false}
           scroll={{ x: 1180 }}
           columns={[
-            { title: '序号', width: 64, render: (_value, _record, index) => index + 1 },
-            { title: '推理引擎', dataIndex: 'engine', width: 150 },
-            { title: '加速卡', dataIndex: 'accelerator', width: 240 },
-            { title: 'CPU（核）', dataIndex: 'cpu', width: 100 },
-            { title: '内存（GiB）', dataIndex: 'memory', width: 120 },
-            { title: '共享内存（GiB）', dataIndex: 'sharedMemory', width: 140 },
-            { title: '节点数量', dataIndex: 'nodes', width: 100 },
+            { title: text.sequence, width: 64, render: (_value, _record, index) => index + 1 },
+            { title: text.inferenceEngine, dataIndex: 'engine', width: 150 },
+            { title: text.accelerator, dataIndex: 'accelerator', width: 240, render: (value) => format(value) },
+            { title: text.cpuCores, dataIndex: 'cpu', width: 100 },
+            { title: text.memoryGib, dataIndex: 'memory', width: 120 },
+            { title: text.sharedMemoryGib, dataIndex: 'sharedMemory', width: 140 },
+            { title: text.nodeCount, dataIndex: 'nodes', width: 100 },
             {
-              title: '参数配置',
+              title: text.parameterConfig,
               width: 100,
               render: () => (
                 <Popover
                   arrow
                   placement="leftTop"
                   trigger="hover"
-                  content={<InferenceParametersPopover />}
+                  content={<InferenceParametersPopover text={text} />}
                 >
-                  <Button type="link" size="small">详情</Button>
+                  <Button type="link" size="small">{text.detail}</Button>
                 </Popover>
               ),
             },
@@ -598,28 +942,28 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
         />
       </section>
       <section className="form-section">
-        <h2>高级配置</h2>
+        <h2>{text.advancedConfig}</h2>
         <Descriptions colon={false} column={4} items={[
-          { key: 'route', label: '高性能路由', children: <StatusBadge status="success" text="启用" /> },
-          { key: 'scale', label: '扩缩容', children: '关闭' },
+          { key: 'route', label: text.highPerformanceRouting, children: <StatusBadge status="success" text={text.enabled} /> },
+          { key: 'scale', label: text.scaling, children: text.disabled },
           {
             key: 'affinity',
-            label: '节点亲和性',
+            label: text.nodeAffinity,
             children: affinity ? (
               <Space size={4}>
-                <StatusBadge status="success" text="启用" />
+                <StatusBadge status="success" text={text.enabled} />
                 <Popover
                   arrow
                   placement="top"
                   trigger="hover"
-                  content={<AffinityRulesPopover />}
+                  content={<AffinityRulesPopover locale={locale} text={text} />}
                 >
-                  <Button className="config-detail-trigger" type="link" size="small">详情</Button>
+                  <Button className="config-detail-trigger" type="link" size="small">{text.detail}</Button>
                 </Popover>
               </Space>
-            ) : '关闭',
+            ) : text.disabled,
           },
-          { key: 'mount', label: '文件管理挂载', children: '关闭' },
+          { key: 'mount', label: text.fileMount, children: text.disabled },
         ]} />
       </section>
     </div>
@@ -629,8 +973,8 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
     <div className="workspace-page online-service-page">
       <div className="service-page-heading">
         <Space size={8}>
-          <Button type="text" icon={<ArrowLeftOutlined />} aria-label="返回" />
-          <Typography.Title level={3}>创建在线服务</Typography.Title>
+          <Button type="text" icon={<ArrowLeftOutlined />} aria-label={text.back} />
+          <Typography.Title level={3}>{text.createOnlineService}</Typography.Title>
         </Space>
       </div>
       <Form form={form} colon={false} layout="vertical" className="wizard-surface">
@@ -639,10 +983,10 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
             current={current}
             responsive
             items={[
-              { title: '基本配置', description: '服务与模型' },
-              { title: '推理配置', description: '资源与调度' },
-              { title: '参数配置', description: '运行参数' },
-              { title: '确认信息', description: '核对并创建' },
+              { title: text.stepBasic, description: text.stepBasicDesc },
+              { title: text.stepInference, description: text.stepInferenceDesc },
+              { title: text.stepParameter, description: text.stepParameterDesc },
+              { title: text.stepConfirm, description: text.stepConfirmDesc },
             ]}
           />
         </div>
@@ -650,28 +994,28 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
           {[serviceInfo, inferenceConfig, parameterConfig, confirmInfo][current]}
         </div>
         <footer className="wizard-footer">
-          <Button>取消</Button>
-          {current > 0 ? <Button onClick={() => setCurrent((value) => value - 1)}>上一步</Button> : null}
+          <Button>{text.cancel}</Button>
+          {current > 0 ? <Button onClick={() => setCurrent((value) => value - 1)}>{text.previous}</Button> : null}
           {current < 3 ? (
-            <Button type="primary" onClick={nextStep}>下一步</Button>
+            <Button type="primary" onClick={nextStep}>{text.next}</Button>
           ) : (
-            <Button type="primary" onClick={() => message.success('在线服务已进入创建队列')}>确认创建</Button>
+            <Button type="primary" onClick={() => message.success(text.createSuccess)}>{text.confirmCreate}</Button>
           )}
         </footer>
       </Form>
 
       <Modal
         className="accelerator-config-modal"
-        title="加速卡配置"
+        title={text.acceleratorConfig}
         open={acceleratorConfigOpen}
         width={520}
-        okText="确定"
-        cancelText="取消"
+        okText={text.ok}
+        cancelText={text.cancel}
         onCancel={() => setAcceleratorConfigOpen(false)}
         onOk={() => {
           acceleratorForm.validateFields().then(() => {
             setAcceleratorConfigOpen(false);
-            message.success('加速卡配置已更新');
+            message.success(text.acceleratorUpdated);
           });
         }}
       >
@@ -681,40 +1025,40 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
           layout="vertical"
           colon={false}
         >
-          <Form.Item name="accelerator" label="加速卡" rules={[{ required: true, message: '请选择加速卡' }]}>
+          <Form.Item name="accelerator" label={text.accelerator} rules={[{ required: true, message: text.validators.accelerator }]}>
             <Select options={[
-              { value: '英伟达 RTX PRO 5000 × 1', label: '英伟达 RTX PRO 5000 × 1' },
-              { value: '昇腾 / Ascend910B', label: '昇腾 / Ascend910B' },
-              { value: '沐曦 MXC500 × 1', label: '沐曦 MXC500 × 1' },
+              { value: '英伟达 RTX PRO 5000 × 1', label: format('英伟达 RTX PRO 5000 × 1') },
+              { value: '昇腾 / Ascend910B', label: format('昇腾 / Ascend910B') },
+              { value: '沐曦 MXC500 × 1', label: format('沐曦 MXC500 × 1') },
             ]} />
           </Form.Item>
-          <Form.Item name="mode" label="使用模式" rules={[{ required: true, message: '请选择使用模式' }]}>
+          <Form.Item name="mode" label={text.useMode} rules={[{ required: true, message: text.validators.mode }]}>
             <Radio.Group options={[
-              { value: 'passthrough', label: '直通' },
+              { value: 'passthrough', label: text.passthrough },
               { value: 'eNPU', label: 'eNPU' },
             ]} />
           </Form.Item>
-          <Form.Item name="compute" label="算力" rules={[{ required: true, message: '请输入算力' }]}>
+          <Form.Item name="compute" label={text.compute} rules={[{ required: true, message: text.validators.compute }]}>
             <FixedUnitNumberInput min={1} max={100} unit="%" />
           </Form.Item>
-          <Form.Item name="memory" label="显存" extra="支持1MiB的整数倍切分" rules={[{ required: true, message: '请输入显存' }]}>
+          <Form.Item name="memory" label={text.vram} extra={text.vramExtra} rules={[{ required: true, message: text.validators.vram }]}>
             <SelectUnitNumberInput min={1} unitDefaultValue="MiB" />
           </Form.Item>
-          <Form.Item name="schedule" label="调度方式" rules={[{ required: true, message: '请选择调度方式' }]}>
+          <Form.Item name="schedule" label={text.scheduleMode} rules={[{ required: true, message: text.validators.schedule }]}>
             <Radio.Group options={[
-              { value: 'density', label: '密度' },
-              { value: 'performance', label: '性能' },
+              { value: 'density', label: text.density },
+              { value: 'performance', label: text.performance },
             ]} />
           </Form.Item>
           <Form.Item
             name="partition"
-            label={<FieldHelp tip="按业务弹性需求选择加速卡切分策略。">划分模式</FieldHelp>}
-            rules={[{ required: true, message: '请选择划分模式' }]}
+            label={<FieldHelp tip={text.partitionTip}>{text.partitionMode}</FieldHelp>}
+            rules={[{ required: true, message: text.validators.partition }]}
           >
             <Select options={[
-              { value: 'elastic', label: '弹性' },
-              { value: 'fixed', label: '固定' },
-              { value: 'exclusive', label: '独占' },
+              { value: 'elastic', label: text.elastic },
+              { value: 'fixed', label: text.fixed },
+              { value: 'exclusive', label: text.exclusive },
             ]} />
           </Form.Item>
         </Form>
@@ -722,7 +1066,7 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
 
       <Modal
         className="model-picker-modal"
-        title="选择模型"
+        title={text.selectModel}
         open={modelOpen}
         onCancel={() => setModelOpen(false)}
         onOk={() => {
@@ -731,8 +1075,8 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
           setModelOpen(false);
         }}
         width={1240}
-        okText="确定"
-        cancelText="取消"
+        okText={text.ok}
+        cancelText={text.cancel}
         okButtonProps={{ disabled: !draftModel || !draftVersion }}
         styles={{ body: { paddingTop: 0 } }}
       >
@@ -741,22 +1085,31 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
           activeKey={modelTab}
           onChange={selectModelTab}
           items={modelTabs}
-          tabBarExtraContent={<Input prefix={<SearchOutlined />} value={modelSearch} onChange={(event) => setModelSearch(event.target.value)} placeholder="搜索模型名称" allowClear className="model-search" />}
+          tabBarExtraContent={<Input prefix={<SearchOutlined />} value={modelSearch} onChange={(event) => setModelSearch(event.target.value)} placeholder={text.searchModel} allowClear className="model-search" />}
         />
         <div className="model-picker-grid">
           <div className="model-type-column">
-            <h3>模型类型</h3>
+            <h3>{text.modelType}</h3>
             <div className="model-type-list">
               {modelTypes.map((item) => (
                 <button type="button" className={modelType === item.key ? 'model-type-option selected' : 'model-type-option'} key={item.key} onClick={() => selectModelType(item.key)}>
-                  <span>{item.label}</span>
+                  <span>{locale === 'en' ? {
+                    text: 'Text Generation',
+                    'image-classification': 'Image Classification',
+                    'object-detection': 'Object Detection',
+                    segmentation: 'Semantic Segmentation',
+                    embedding: 'Embeddings',
+                    rerank: 'Rerank',
+                    other: 'Other',
+                    'image-understanding': 'Image Understanding',
+                  }[item.key] : item.label}</span>
                   <Tag>{item.count}</Tag>
                 </button>
               ))}
             </div>
           </div>
           <div className="model-column">
-            <h3>模型（{filteredModels.length}）</h3>
+            <h3>{text.modelCount.replace('{count}', String(filteredModels.length))}</h3>
             <Radio.Group value={draftModel} onChange={(event) => {
               const nextModel = models.find((item) => item.name === event.target.value);
               setDraftModel(event.target.value);
@@ -770,18 +1123,18 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
                         <Avatar size={40} className={`model-logo model-tone-${index % 6}`}>{item.name.charAt(0)}</Avatar>
                         <span className="model-copy">
                           <b>{item.name}</b>
-                          <small>{item.description}</small>
+                          <small>{modelDescription(item)}</small>
                         </span>
-                        <span className="model-owner">创建人 {item.creator}</span>
+                        <span className="model-owner">{text.owner} {providerName(item.creator)}</span>
                       </span>
                     </Radio>
                   </div>
-                )) : <div className="model-empty">当前类型暂无模型</div>}
+                )) : <div className="model-empty">{text.modelEmpty}</div>}
               </div>
             </Radio.Group>
           </div>
           <div className="version-column">
-            <h3>版本（{activeDraftModel?.versions.length ?? 0}）</h3>
+            <h3>{text.versionCount.replace('{count}', String(activeDraftModel?.versions.length ?? 0))}</h3>
             <Radio.Group value={draftVersion} onChange={(event) => setDraftVersion(event.target.value)}>
               {activeDraftModel?.versions.map((item) => (
                 <Radio className={draftVersion === item ? 'version-option selected' : 'version-option'} value={item} key={item}>
@@ -793,7 +1146,7 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
         </div>
         <div className="model-picker-footer">
           <div className="model-picker-summary">
-            <Typography.Text type="secondary">已选：1 / 1</Typography.Text>
+            <Typography.Text type="secondary">{text.selected}</Typography.Text>
             <Tag>{draftModel}</Tag>
           </div>
         </div>
@@ -801,7 +1154,7 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
 
       <Modal
         className="cluster-picker-modal"
-        title="选择集群"
+        title={text.selectCluster}
         open={clusterOpen}
         onCancel={() => setClusterOpen(false)}
         onOk={() => {
@@ -809,12 +1162,12 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
           setClusterOpen(false);
         }}
         width={920}
-        okText="确定"
-        cancelText="取消"
+        okText={text.ok}
+        cancelText={text.cancel}
         okButtonProps={{ disabled: !draftCluster }}
       >
         <div className="cluster-picker-toolbar">
-          <Input prefix={<SearchOutlined />} value={clusterSearch} onChange={(event) => setClusterSearch(event.target.value)} placeholder="请输入集群名称搜索" allowClear />
+          <Input prefix={<SearchOutlined />} value={clusterSearch} onChange={(event) => setClusterSearch(event.target.value)} placeholder={text.searchCluster} allowClear />
         </div>
         <Table
           size="small"
@@ -829,14 +1182,14 @@ export function OnlineServicePage({ onOpenContainerCreate }: OnlineServicePagePr
           }}
           onRow={(record) => ({ onClick: () => setDraftCluster(record.key) })}
           columns={[
-            { title: '集群名称', dataIndex: 'name', width: 160 },
+            { title: text.clusterName, dataIndex: 'name', width: 160 },
             { title: 'IP', dataIndex: 'ip', width: 132 },
-            { title: 'CPU（已分配 / 总数）', dataIndex: 'cpu', width: 190 },
-            { title: '内存（已分配 / 总数）', dataIndex: 'memory', width: 220 },
-            { title: '加速卡', dataIndex: 'accelerator', width: 210 },
+            { title: text.cpuAllocatedTotal, dataIndex: 'cpu', width: 190, render: (value) => format(value) },
+            { title: text.memoryAllocatedTotal, dataIndex: 'memory', width: 220 },
+            { title: text.accelerator, dataIndex: 'accelerator', width: 210, render: (value) => format(value) },
           ]}
         />
-        <Typography.Text className="cluster-total" type="secondary">共 {filteredClusters.length} 个集群</Typography.Text>
+        <Typography.Text className="cluster-total" type="secondary">{text.clusterTotal.replace('{count}', String(filteredClusters.length))}</Typography.Text>
       </Modal>
     </div>
   );
